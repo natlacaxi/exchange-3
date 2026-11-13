@@ -1,0 +1,6 @@
+TalcoExchange — GroupeTalco / TalcoAdministration / © TalcoInc2026
+
+1. Mets tous les fichiers (sauf database.rules.json) a la racine du repo GitHub Pages.
+2. Firebase > Authentication > Methode de connexion : active "E-mail/Mot de passe".
+3. Firebase > Authentication > Parametres > Domaines autorises : ajoute tonpseudo.github.io
+4. Firebase > Realtime Database > Regles : colle database.rules.json puis Publier.
