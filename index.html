@@ -22,7 +22,7 @@
   --bg:#fff;--bg2:#f2f2f7;--fill:rgba(118,118,128,.12);
   --txt:#000;--sub:#8e8e93;--sep:rgba(60,60,67,.16);
   --blue:#007aff;--sent:#34c759;--recv:#e9e9eb;--danger:#ff3b30;
-  --scrim:rgba(255,255,255,.22);--g-a:1;--lg:.7;--g-bg:rgba(255,255,255,.06);--g-edge:rgba(255,255,255,.7);--g-hi:rgba(255,255,255,.95);--g-lo:rgba(255,255,255,.35);
+  --rowline:rgba(255,255,255,.55);--scrim:rgba(255,255,255,.14);--g-a:1;--lg:.7;--g-bg:rgba(255,255,255,.06);--g-edge:rgba(255,255,255,.7);--g-hi:rgba(255,255,255,.95);--g-lo:rgba(255,255,255,.35);
   --g-sh:0 10px 30px rgba(0,0,0,.13),0 1px 4px rgba(0,0,0,.08);--g-tint:rgba(120,125,140,.10);
   --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
 }
@@ -30,7 +30,7 @@
   --bg:#000;--bg2:#1c1c1e;--fill:rgba(118,118,128,.24);
   --txt:#fff;--sub:#98989f;--sep:rgba(84,84,88,.55);
   --blue:#0a84ff;--sent:#30d158;--recv:#262629;--danger:#ff453a;
-  --scrim:rgba(0,0,0,.36);--g-a:.3;--g-bg:rgba(40,40,46,.14);--g-edge:rgba(255,255,255,.14);--g-hi:rgba(255,255,255,.34);--g-lo:rgba(255,255,255,.08);
+  --rowline:rgba(255,255,255,.22);--scrim:rgba(0,0,0,.28);--g-a:.3;--g-bg:rgba(40,40,46,.14);--g-edge:rgba(255,255,255,.14);--g-hi:rgba(255,255,255,.34);--g-lo:rgba(255,255,255,.08);
   --g-sh:0 10px 30px rgba(0,0,0,.55),0 1px 4px rgba(0,0,0,.4);--g-tint:rgba(255,255,255,.04);
 }}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -244,10 +244,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:34px;heigh
 input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:var(--fill)}
 input[type=range]::-moz-range-thumb{width:34px;height:24px;border:0;border-radius:12px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 /* ===== v4 ===== */
-.wall{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:#111}
-.wall::before{content:"";position:absolute;inset:-10%;background:url("https://res.cloudinary.com/tbmdciyv/image/upload/v1794424488/file_00000000a65881f999e07af4977a3071.png") center/cover no-repeat;transform:scale(1.25);filter:blur(var(--wb,16px))}
-@media(min-width:821px){.wall::before{background-image:url("https://res.cloudinary.com/tbmdciyv/image/upload/v1794424479/file_000000007bec820abe68fbdfca0b00ee.png")}}
-.wall::after{content:"";position:absolute;inset:0;background:var(--scrim)}
+.wall{position:fixed;inset:0;z-index:0;pointer-events:none;background:#111 url("https://res.cloudinary.com/tbmdciyv/image/upload/v1794424488/file_00000000a65881f999e07af4977a3071.png") center/cover no-repeat}
+@media(min-width:821px){.wall{background-image:url("https://res.cloudinary.com/tbmdciyv/image/upload/v1794424479/file_000000007bec820abe68fbdfca0b00ee.png")}}
+.wall::after{content:"";position:absolute;inset:0;background:var(--scrim);backdrop-filter:blur(var(--wb,0px));-webkit-backdrop-filter:blur(var(--wb,0px))}
 .sh,.cm{backdrop-filter:blur(calc(14px + 30px*var(--lg))) saturate(1.8);-webkit-backdrop-filter:blur(calc(14px + 30px*var(--lg))) saturate(1.8)}
 .av img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
 .sw{width:34px;height:34px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.6)}
@@ -263,6 +262,17 @@ input[type=range]::-moz-range-thumb{width:34px;height:24px;border:0;border-radiu
 [data-mode=mac] .inst{border-radius:16px}
 body{position:fixed;inset:0;width:100%}
 .kb .composer{padding-bottom:10px}
+/* ===== v7 : contacts, médias, hors ligne ===== */
+.row{background:rgba(255,255,255,calc(.05 + .10*var(--lg)*var(--g-a)));backdrop-filter:blur(var(--rb,13px)) saturate(1.5);-webkit-backdrop-filter:blur(var(--rb,13px)) saturate(1.5);border-bottom:1px solid var(--rowline)}
+.row .mid{border-bottom:0}
+.m.media{padding:4px;white-space:normal}
+.m.media img{display:block;width:260px;max-width:100%;height:auto;min-height:60px;border-radius:15px;background:rgba(120,120,128,.25)}
+.m.media audio{display:block;width:240px;max-width:100%;height:40px}
+.m.pend{opacity:.55}
+.ov.lb{place-items:center}.ov.lb img{max-width:96%;max-height:92%;border-radius:14px}
+.offbar{position:fixed;top:calc(8px + env(safe-area-inset-top));left:0;right:0;margin:auto;width:max-content;max-width:calc(100% - 24px);z-index:60;border-radius:999px;padding:7px 16px;font-size:13.5px;font-weight:600;pointer-events:none}
+.expd{display:block;padding:6px 10px;font-size:14px;opacity:.8}
+.ov.lb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}.ov.lb img{max-height:78%}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -484,8 +494,13 @@ let unsubs = [];
 let registering = false;
 let curTab = "chats";
 const userCache = new Map();
+const saveLS = (p, v) => { try { localStorage.setItem(p + me.uid, JSON.stringify(v)); } catch (e) {} };
+const ucGet = () => { try { return JSON.parse(localStorage.getItem("tx_uc") || "{}"); } catch (e) { return {}; } };
 const getUser = uid => {
-  if (!userCache.has(uid)) userCache.set(uid, get(ref(db, "users/" + uid)).then(s => s.exists() ? { uid, ...s.val() } : { uid, id: "inconnu", name: "Utilisateur" }).catch(() => ({ uid, id: "?", name: "?" })));
+  if (!userCache.has(uid)) userCache.set(uid, get(ref(db, "users/" + uid)).then(s => {
+    if (!s.exists()) return { uid, id: "inconnu", name: "Utilisateur" };
+    const v = { uid, ...s.val() }; try { const c = ucGet(); c[uid] = v; localStorage.setItem("tx_uc", JSON.stringify(c)); } catch (e) {} return v;
+  }).catch(() => { userCache.delete(uid); return ucGet()[uid] || { uid, id: "?", name: "?" }; }));
   return userCache.get(uid);
 };
 const readKey = u => `tx_r_${me.uid}_${u}`;
@@ -539,21 +554,24 @@ onAuthStateChanged(auth, async u => {
 
 async function boot(u) {
   let prof = null;
-  for (let i = 0; i < 5 && !prof; i++) {
-    try { const s = await get(ref(db, "users/" + u.uid)); if (s.exists()) prof = s.val(); } catch (e) { /* retry */ }
+  const pk = "tx_prof_" + u.uid;
+  for (let i = 0; i < 5 && !prof && navigator.onLine; i++) {
+    try { const s = await get(ref(db, "users/" + u.uid)); if (s.exists()) { prof = s.val(); try { localStorage.setItem(pk, JSON.stringify(prof)); } catch (e) {} } } catch (e) { /* retry */ }
     if (!prof) await new Promise(r => setTimeout(r, 500));
   }
+  if (!prof) { try { prof = JSON.parse(localStorage.getItem(pk) || "null"); } catch (e) {} }
   if (!prof) { toast("Profil introuvable, reconnexion…"); await signOut(auth); return; }
   teardown();
   me = { uid: u.uid, id: prof.id, name: prof.name, photo: prof.photo };
   userCache.set(me.uid, Promise.resolve({ uid: me.uid, ...prof }));
   $("#auth").classList.add("hidden"); $("#app").classList.remove("hidden");
   $("#authForm").reset(); setMode("login");
+  try { friends = JSON.parse(localStorage.getItem("tx_fr_" + me.uid) || "{}"); chats = JSON.parse(localStorage.getItem("tx_ch_" + me.uid) || "{}"); } catch (e) {}
   renderMe(); setTab("chats");
   unsubs.push(
-    onValue(ref(db, "friends/" + me.uid), s => { friends = s.val() || {}; renderFriends(); if (curTab === "search") renderResults(); }),
+    onValue(ref(db, "friends/" + me.uid), s => { friends = s.val() || {}; saveLS("tx_fr_", friends); renderFriends(); if (curTab === "search") renderResults(); }),
     onValue(ref(db, "requests/" + me.uid), s => { reqIn = s.val() || {}; renderFriends(); updateBadge(); if (curTab === "search") renderResults(); }),
-    onValue(ref(db, "userChats/" + me.uid), s => { chats = s.val() || {}; renderChats(); if (active && chats[active]) markRead(active); },
+    onValue(ref(db, "userChats/" + me.uid), s => { chats = s.val() || {}; saveLS("tx_ch_", chats); renderChats(); if (active && chats[active]) markRead(active); },
       err => toast("Accès refusé : vérifiez les règles de la base."))
   );
   unsubs.push(onValue(ref(db, "scheduled/" + me.uid), s => { sched = s.val() || {}; schedBar(); flush(); }, () => {}), (() => { const t = setInterval(flush, 4000); return () => clearInterval(t); })());
@@ -614,17 +632,19 @@ async function openChat(uid) {
   $("#noChat").classList.add("hidden"); $("#chat").classList.remove("hidden");
   $("#app").classList.add("chat-open"); pcApply();
   markRead(uid); renderChats();
+  try { JSON.parse(localStorage.getItem(mcKey()) || "[]").forEach(m => addMsg(m, 1)); } catch (e) {}
+  obGet().filter(e => e.to === uid).forEach(e => addMsg({ k: e.key, from: me.uid, text: e.text, ts: e.at, pend: 1, kind: e.kind, mime: e.mime, b64: e.b64, dur: e.dur, w: e.w, h: e.h }, 1));
   const q = query(ref(db, `chats/${chatId(me.uid, uid)}/messages`), limitToLast(150));
   const u1 = onChildAdded(q, s => {
     if (token !== msgToken) return;
-    addMsg({ ...s.val(), k: s.key });
+    const v0 = { ...s.val(), k: s.key }; addMsg(v0); sweep(v0, chatId(me.uid, uid));
     if (document.visibilityState === "visible") markRead(uid);
   }, () => toast("Impossible de lire les messages."));
   const u2 = onChildChanged(q, s => {
     if (token !== msgToken) return;
     const v = { ...s.val(), k: s.key }; M.set(s.key, v);
     const el = $(`#msgs [data-k="${s.key}"]`);
-    if (el) { el.textContent = v.text; if (v.edited) el.dataset.ed = 1; else delete el.dataset.ed; }
+    if (el) { if (!v.kind) el.textContent = v.text; el.classList.remove("pend"); if (v.edited) el.dataset.ed = 1; else delete el.dataset.ed; }
   });
   const u3 = onChildRemoved(q, s => { if (token !== msgToken) return; M.delete(s.key); rerender(); });
   msgUnsub = () => { u1(); u2(); u3(); };
@@ -634,6 +654,8 @@ async function openChat(uid) {
 let lastMsgTs = 0, lastFrom = null, lastEl = null;
 function addMsg(m, quiet) {
   M.set(m.k, m); if (HID.has(m.k)) return;
+  const ex = $(`#msgs [data-k="${m.k}"]`);
+  if (ex) { ex.classList.remove("pend"); if (!m.kind) ex.textContent = m.text; saveCache(); return; }
   const box = $("#msgs"), near = box.scrollHeight - box.scrollTop - box.clientHeight < 160;
   const ts = typeof m.ts === "number" ? m.ts : Date.now();
   if (!lastMsgTs || ts - lastMsgTs > 3600e3 || new Date(ts).toDateString() !== new Date(lastMsgTs).toDateString()) {
@@ -644,11 +666,12 @@ function addMsg(m, quiet) {
   
   const el = document.createElement("div");
   el.className = `m ${mine ? "me" : "them"} tail ${lastFrom !== m.from ? "first" : ""}`;
-  el.textContent = m.text; el.title = fmtTime(ts); el.dataset.k = m.k; if (m.edited) el.dataset.ed = 1; if (quiet) el.style.animation = "none";
+  if (m.kind) initMedia(el, m); else el.textContent = m.text; if (m.pend) el.classList.add("pend"); el.title = fmtTime(ts); el.dataset.k = m.k; if (m.edited) el.dataset.ed = 1; if (quiet) el.style.animation = "none";
   box.appendChild(el);
   if (mine) box.insertAdjacentHTML("beforeend", `<div class="status">Distribué</div>`);
   lastMsgTs = ts; lastFrom = m.from; lastEl = el;
   if (near || mine) box.scrollTop = box.scrollHeight;
+  saveCache();
 }
 $("#msgIn").addEventListener("input", () => $("#composer").classList.toggle("has", !!$("#msgIn").value.trim()));
 $("#composer").addEventListener("submit", async e => {
@@ -728,7 +751,8 @@ function renderSettings() {
     <div class="sec">Apparence</div>
     <div class="set-card"><div class="set-row" style="flex-direction:column;align-items:stretch;gap:8px"><div style="display:flex;justify-content:space-between"><span>Intensité Liquid Glass</span><b id="lgv">${Math.round(LG*100)}%</b></div><input type="range" id="lg" min="0" max="100" value="${Math.round(LG*100)}"><div class="chips"><button class="btn soft sm" data-lg="20">Discret</button><button class="btn soft sm" data-lg="70">Équilibré</button><button class="btn soft sm" data-lg="100">Max</button></div></div></div>
     <div class="set-card"><div class="set-row"><span>Style</span><div class="chips"><button class="btn soft sm" data-style="ios">iOS 27</button><button class="btn soft sm" data-style="mac">macOS</button></div></div></div>
-    <div class="set-card"><div class="set-row" style="flex-direction:column;align-items:stretch;gap:8px"><div style="display:flex;justify-content:space-between"><span>Flou du fond d’écran</span><b id="wbv">${WB}px</b></div><input type="range" id="wb" min="0" max="40" value="${WB}"></div></div>
+    <div class="set-card"><div class="set-row" style="flex-direction:column;align-items:stretch;gap:8px"><div style="display:flex;justify-content:space-between"><span>Flou du fond d’écran</span><b id="wbv">${BL.wb}px</b></div><input type="range" data-bl="wb" min="0" max="40" value="${BL.wb}"></div></div>
+    <div class="set-card"><div class="set-row" style="flex-direction:column;align-items:stretch;gap:8px"><div style="display:flex;justify-content:space-between"><span>Flou des conversations</span><b id="rbv">${BL.rb}px</b></div><input type="range" data-bl="rb" min="0" max="30" value="${BL.rb}"></div></div>
     <div class="set-card"><div class="set-row"><span>Photo de profil</span><span style="display:flex;gap:6px"><label class="btn soft sm" for="photoIn">Choisir</label>${me.photo ? '<button class="btn danger sm" id="photoRm">Retirer</button>' : ""}<input type="file" id="photoIn" accept="image/*" hidden></span></div></div>
     <div class="set-card hidden" id="instRow"><div class="set-row"><span>Installer l’application</span><button class="get" data-inst>Installer</button></div></div>
     <div class="sec">Confidentialité</div>
@@ -818,7 +842,7 @@ function slide(e, mn) {
   const hit = ev => { const t = document.elementFromPoint(ev.clientX, ev.clientY)?.closest(".mi"), n = t && mn.contains(t) ? t : null; if (n !== cur) { cur?.classList.remove("on"); cur = n; if (cur) { cur.classList.add("on"); navigator.vibrate?.(6); } } };
   const mv = ev => { if (ev.pointerId === id) hit(ev); };
   const off = () => { removeEventListener("pointermove", mv); removeEventListener("pointerup", up); removeEventListener("pointercancel", off); };
-  const up = ev => { if (ev.pointerId !== id) return; off(); if (cur) { const a = cur; setTimeout(() => a.click(), 0); } };
+  const up = ev => { if (ev.pointerId !== id) return; off(); if (cur) cur.click(); };
   addEventListener("pointermove", mv); addEventListener("pointerup", up); addEventListener("pointercancel", off);
 }
 addEventListener("touchmove", e => { if ($(".mn")) e.preventDefault(); }, { passive: false });
@@ -856,11 +880,47 @@ document.addEventListener("click", async e => {
 });
 showInst();
 
-async function sendMsg(other, text) {
-  const cid = chatId(me.uid, other), key = push(ref(db, `chats/${cid}/messages`)).key;
-  const meta = { last: text.slice(0, 120), ts: serverTimestamp(), from: me.uid };
-  await update(ref(db), { [`chats/${cid}/messages/${key}`]: { from: me.uid, text, ts: serverTimestamp() }, [`userChats/${me.uid}/${other}`]: meta, [`userChats/${other}/${me.uid}`]: meta });
+const obKey = () => "tx_ob_" + me.uid;
+const obGet = () => { try { return JSON.parse(localStorage.getItem(obKey()) || "[]"); } catch (e) { return []; } };
+const obSet = a => { try { localStorage.setItem(obKey(), JSON.stringify(a)); } catch (e) { toast("Stockage local plein."); } };
+const inflight = new Set();
+async function put(e) {
+  const cid = chatId(me.uid, e.to), meta = { last: e.text.slice(0, 120), ts: serverTimestamp(), from: me.uid };
+  const msg = { from: me.uid, text: e.text, ts: serverTimestamp() };
+  if (e.kind) { msg.kind = e.kind; if (e.dur) msg.dur = e.dur; if (e.w) { msg.w = e.w; msg.h = e.h; } }
+  const up = { [`chats/${cid}/messages/${e.key}`]: msg, [`userChats/${me.uid}/${e.to}`]: meta, [`userChats/${e.to}/${me.uid}`]: meta };
+  if (e.kind) up[`media/${cid}/${e.key}`] = { mime: e.mime, b64: e.b64 };
+  await update(ref(db), up);
 }
+async function sendMsg(other, text, media) {
+  const cid = chatId(me.uid, other), key = push(ref(db, `chats/${cid}/messages`)).key, e = { key, to: other, text, at: Date.now(), ...media };
+  if (media) idbSet(`${cid}/${key}`, { mime: media.mime, b64: media.b64 });
+  obSet([...obGet(), e]);
+  if (!navigator.onLine) {
+    if (active === other) addMsg({ k: key, from: me.uid, text, ts: e.at, pend: 1, ...media });
+    toast("Hors ligne : message gardé, envoi au retour du réseau."); return;
+  }
+  inflight.add(key);
+  try { await put(e); obSet(obGet().filter(x => x.key !== key)); } catch (x) { toast("Envoi en attente…"); }
+  inflight.delete(key);
+}
+let obBusy = false;
+async function flushOb() {
+  if (!me || obBusy || !navigator.onLine) return; obBusy = true;
+  try {
+    for (const e of obGet()) {
+      if (inflight.has(e.key)) continue;
+      try {
+        const sn = await get(ref(db, `chats/${chatId(me.uid, e.to)}/messages/${e.key}`));
+        if (!sn.exists()) await put(e);
+        obSet(obGet().filter(x => x.key !== e.key));
+      } catch (x) { break; }
+    }
+  } finally { obBusy = false; }
+}
+const showOff = () => $("#offBar").classList.toggle("hidden", navigator.onLine);
+addEventListener("online", () => { showOff(); flushOb(); flush(); });
+addEventListener("offline", showOff);
 const lastKey = () => [...M.values()].pop()?.k;
 async function editMsg(k, text) {
   const o = active, p = `chats/${chatId(me.uid, o)}/messages/${k}`, up = { [p + "/text"]: text, [p + "/edited"]: true };
@@ -877,7 +937,7 @@ function delMsg(k) {
     sh.remove();
     if (d.a === "me") { HID.add(k); localStorage.setItem(hk(), JSON.stringify([...HID])); rerender(); return; }
     if (d.a !== "all") return;
-    const cid = chatId(me.uid, o), up = { [`chats/${cid}/messages/${k}`]: null };
+    const cid = chatId(me.uid, o), up = { [`chats/${cid}/messages/${k}`]: null }; if (m.kind) up[`media/${cid}/${k}`] = null;
     if (lastKey() === k) {
       const rest = [...M.values()].filter(x => x.k !== k), p = rest[rest.length - 1];
       const meta = p ? { last: p.text.slice(0, 120), ts: p.ts, from: p.from } : { last: "Message supprimé", ts: Date.now(), from: me.uid };
@@ -890,8 +950,9 @@ function msgMenu(el, e) {
   const k = el.dataset.k, m = M.get(k); if (!m || $(".mn") || !me) return;
   const mine = m.from === me.uid, r = el.getBoundingClientRect(), c = el.cloneNode(true);
   c.style.cssText = `position:fixed;left:${r.left}px;top:${r.top}px;width:${r.width}px;max-width:none;margin:0;z-index:2;animation:none;transform:scale(1.04)`;
-  const it = []; if (mine) it.push({ t: "Modifier", i: I.edit, a: () => startEdit(k) });
-  it.push({ t: "Copier", i: I.copy, a: () => { navigator.clipboard?.writeText(m.text); toast("Copié"); } });
+  const it = []; if (mine && !m.kind) it.push({ t: "Modifier", i: I.edit, a: () => startEdit(k) });
+  if (!m.kind) it.push({ t: "Copier", i: I.copy, a: () => { navigator.clipboard?.writeText(m.text); toast("Copié"); } });
+  if (m.kind) it.push({ t: "Enregistrer", i: I.dl, a: () => dlMedia(el) });
   it.push({ t: mine ? "Supprimer" : "Supprimer pour moi", i: I.trash, red: 1, a: () => delMsg(k) });
   const mn = menu(it, r, mine, c); if (e) slide(e, mn);
 }
@@ -935,7 +996,7 @@ function schedList() {
   });
 }
 async function flush() {
-  if (!me) return;
+  if (!me) return; flushOb();
   for (const [id, s] of Object.entries(sched)) {
     if (s.sendAt > Date.now() || flushing.has(id)) continue; flushing.add(id);
     try { const r = await runTransaction(ref(db, `scheduled/${me.uid}/${id}`), v => v ? null : undefined); if (r.committed) await sendMsg(s.to, s.text); }
@@ -945,7 +1006,7 @@ async function flush() {
 }
 $("#plus").addEventListener("pointerdown", e => {
   e.preventDefault(); if (!active) return;
-  const r = e.currentTarget.getBoundingClientRect(), it = [{ t: "Programmer l’envoi", i: I.clock, a: () => schedSheet() }];
+  const r = e.currentTarget.getBoundingClientRect(), it = [{ t: "Photo", i: I.img, a: () => $("#imgIn").click() }, { t: "Message vocal", i: I.mic, a: recSheet }, { t: "Programmer l’envoi", i: I.clock, a: () => schedSheet() }];
   const n = Object.values(sched).filter(s => s.to === active).length;
   if (n) it.push({ t: `Programmés (${n})`, i: I.clock, a: schedList });
   slide(e, menu(it, r, false, null));
@@ -1013,10 +1074,121 @@ if (window.visualViewport) {
 }
 $("#msgIn").addEventListener("focus", () => setTimeout(() => { scrollTo(0, 0); const b = $("#msgs"); b.scrollTop = b.scrollHeight; }, 320));
 
-let WB = 16;
-function setWb(v) { WB = v; document.documentElement.style.setProperty("--wb", v + "px"); localStorage.setItem("tx_wb", v); const l = $("#wbv"); if (l) l.textContent = v + "px"; }
-{ const v = localStorage.getItem("tx_wb"); setWb(v === null ? 16 : +v); }
-document.addEventListener("input", e => { if (e.target.id === "wb") setWb(+e.target.value); });
+/* ---------- v7 : cache local, photos et audio (base64) ---------- */
+document.body.insertAdjacentHTML("beforeend", '<input type="file" id="imgIn" accept="image/*" hidden><div class="offbar glass hidden" id="offBar">Hors ligne · conversations enregistrées</div>');
+showOff();
+I.img = '<svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/></svg>';
+I.mic = '<svg class="i" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+
+const mcKey = () => "tx_mc_" + chatId(me.uid, active);
+let mcT;
+function saveCache() {
+  clearTimeout(mcT);
+  mcT = setTimeout(() => {
+    if (!me || !active || !M.size) return;
+    try { localStorage.setItem(mcKey(), JSON.stringify([...M.values()].filter(m => !m.pend).slice(-150).map(({ b64, ...r }) => r))); } catch (e) {}
+  }, 500);
+}
+
+const idb = new Promise(res => { try { const r = indexedDB.open("tx", 1); r.onupgradeneeded = () => r.result.createObjectStore("m"); r.onsuccess = () => res(r.result); r.onerror = () => res(null); } catch (e) { res(null); } });
+const idbGet = async k => { const d = await idb; return d ? new Promise(res => { const q = d.transaction("m").objectStore("m").get(k); q.onsuccess = () => res(q.result); q.onerror = () => res(null); }) : null; };
+const idbSet = async (k, v) => { const d = await idb; if (d) try { d.transaction("m", "readwrite").objectStore("m").put(v, k); } catch (e) {} };
+
+/* base64 → Blob (décodage à l'arrivée) */
+const b64Blob = (b64, mime) => { const bin = atob(b64), a = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); return new Blob([a], { type: mime }); };
+const mediaIO = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { mediaIO.unobserve(en.target); loadMedia(en.target); } }), { rootMargin: "300px" });
+function setMedia(el, mime, b64) { el._mime = mime; el.querySelector("img,audio").src = URL.createObjectURL(b64Blob(b64, mime)); }
+function initMedia(el, m) {
+  el.classList.add("media"); el.dataset.media = m.kind; el._m = m; el._cid = chatId(me.uid, active);
+  el.innerHTML = m.kind === "img" ? "<img alt=\"\">" : "<audio controls preload=\"metadata\"></audio>";
+  if (m.kind === "img" && m.w) el.firstChild.style.aspectRatio = m.w + "/" + m.h;
+  if (m.b64) setMedia(el, m.mime, m.b64); else mediaIO.observe(el);
+}
+const DAY = 864e5, rdSet = new Set();
+const expired = el => { el.classList.remove("media"); el.innerHTML = '<span class="expd">⏳ Média expiré</span>'; };
+async function loadMedia(el) {
+  const id = `${el._cid}/${el._m.k}`, theirs = el._m.from !== me.uid;
+  try {
+    let d = await idbGet(id);
+    if (!d) {
+      const sn = await get(ref(db, "media/" + id)); if (!sn.exists()) return expired(el);
+      d = sn.val();
+      if (d.readAt && Date.now() - d.readAt > DAY) { remove(ref(db, "media/" + id)).catch(() => {}); return expired(el); }
+      idbSet(id, { mime: d.mime, b64: d.b64 });
+    }
+    setMedia(el, d.mime, d.b64);
+    if (theirs) {
+      const mk = () => { if (rdSet.has(id)) return; rdSet.add(id); set(ref(db, `media/${id}/readAt`), serverTimestamp()).catch(() => {}); };
+      if (el._m.kind === "img") mk(); else el.querySelector("audio").addEventListener("play", mk, { once: true });
+    }
+  } catch (x) { /* hors ligne et pas en cache */ }
+}
+async function sweep(m, cid) {
+  if (!m.kind) return; const id = `${cid}/${m.k}`;
+  try {
+    const sn = await get(ref(db, `media/${id}/readAt`)), old = typeof m.ts === "number" && Date.now() - m.ts > 7 * DAY;
+    if (old || (sn.exists() && Date.now() - sn.val() > DAY)) await remove(ref(db, "media/" + id));
+  } catch (x) {}
+}
+I.dl = '<svg class="i" viewBox="0 0 24 24"><path d="M12 3v12M7 11l5 5 5-5M5 21h14"/></svg>';
+function dlMedia(el) {
+  const t = el.querySelector("img,audio"), m = el._m; if (!t || !t.src) return toast("Média pas encore chargé.");
+  const ext = m.kind === "img" ? "jpg" : /mp4/.test(el._mime || "") ? "m4a" : "webm";
+  const a = document.createElement("a"); a.href = t.src; a.download = `talco-${m.kind === "img" ? "photo" : "vocal"}-${m.k.slice(-6)}.${ext}`;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+$("#msgs").addEventListener("click", e => {
+  const i = e.target.closest(".m.media img"); if (!i || !i.src) return;
+  const o = document.createElement("div"); o.className = "ov lb"; o.innerHTML = `<img src="${i.src}" alt=""><a class="get" href="${i.src}" download="talco-photo.jpg">Enregistrer</a>`; o.onclick = e => { if (!e.target.closest("a")) o.remove(); }; document.body.appendChild(o);
+});
+
+function shrinkImg(file) {
+  return new Promise((res, rej) => {
+    const img = new Image(); img.onload = () => {
+      URL.revokeObjectURL(img.src);
+      for (const [mx, q] of [[1280, .72], [1024, .6], [800, .5]]) {
+        const k = Math.min(1, mx / Math.max(img.width, img.height)), w = Math.round(img.width * k), h = Math.round(img.height * k);
+        const c = document.createElement("canvas"); c.width = w; c.height = h; c.getContext("2d").drawImage(img, 0, 0, w, h);
+        const b64 = c.toDataURL("image/jpeg", q).split(",")[1]; if (b64.length <= 1.1e6) return res({ b64, w, h });
+      }
+      rej();
+    }; img.onerror = rej; img.src = URL.createObjectURL(file);
+  });
+}
+$("#imgIn").addEventListener("change", async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f || !active) return;
+  try { const d = await shrinkImg(f); await sendMsg(active, "📷 Photo", { kind: "img", mime: "image/jpeg", b64: d.b64, w: d.w, h: d.h }); } catch (x) { toast("Photo impossible."); }
+});
+
+async function recSheet() {
+  if (!active) return;
+  if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) return toast("Micro non supporté.");
+  let st; try { st = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch (x) { return toast("Micro refusé."); }
+  const mime = ["audio/webm;codecs=opus", "audio/mp4", "audio/webm"].find(t => MediaRecorder.isTypeSupported(t)) || "";
+  const rec = new MediaRecorder(st, mime ? { mimeType: mime } : {}), ch = [], t0 = Date.now(); let send = false, tm;
+  rec.ondataavailable = e => { if (e.data.size) ch.push(e.data); };
+  rec.onstop = async () => {
+    st.getTracks().forEach(t => t.stop()); clearInterval(tm); if (!send) return;
+    const blob = new Blob(ch, { type: rec.mimeType || mime || "audio/webm" }), dur = Math.round((Date.now() - t0) / 1000);
+    const b64 = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result.split(",")[1]); fr.readAsDataURL(blob); });
+    if (b64.length > 1.2e6) return toast("Vocal trop long.");
+    await sendMsg(active, "🎤 Message vocal", { kind: "aud", mime: blob.type, b64, dur });
+  };
+  rec.start();
+  const sh = sheet(`<h3>Message vocal</h3><p id="rT" style="font-size:22px">0:00</p><button class="btn big" data-a="ok">Envoyer</button><button class="btn soft big" data-a="x">Annuler</button>`, (d, o) => { send = d.a === "ok"; o.remove(); if (rec.state !== "inactive") rec.stop(); });
+  new MutationObserver(() => { if (!sh.isConnected && rec.state !== "inactive") rec.stop(); }).observe(document.body, { childList: true });
+  tm = setInterval(() => {
+    const n = Math.round((Date.now() - t0) / 1000), el = document.getElementById("rT");
+    if (el) el.textContent = Math.floor(n / 60) + ":" + String(n % 60).padStart(2, "0");
+    if (n >= 60 && rec.state !== "inactive") { send = true; sh.remove(); }
+  }, 500);
+}
+
+/* ---------- réglages de flou ---------- */
+const BL = { wb: 0, rb: 13 };
+function setBl(k, v) { BL[k] = v; document.documentElement.style.setProperty("--" + k, v + "px"); localStorage.setItem("tx_" + k, v); const l = $("#" + k + "v"); if (l) l.textContent = v + "px"; }
+for (const k in BL) { const v = localStorage.getItem("tx_" + k); setBl(k, v === null ? BL[k] : +v); }
+document.addEventListener("input", e => { if (e.target.dataset && e.target.dataset.bl) setBl(e.target.dataset.bl, +e.target.value); });
 
 /* ---------- visibilité + PWA ---------- */
 document.addEventListener("visibilitychange", () => { flush(); if (document.visibilityState === "visible" && active && me) { markRead(active); renderChats(); } });
