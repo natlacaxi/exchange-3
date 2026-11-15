@@ -1,4 +1,4 @@
-const CACHE = "talcoexchange-v8";
+const CACHE = "talcoexchange-v9";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "favicon.ico", "favicon-32.png", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 
 self.addEventListener("install", e => {

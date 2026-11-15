@@ -273,6 +273,7 @@ body{position:fixed;inset:0;width:100%}
 .offbar{position:fixed;top:calc(8px + env(safe-area-inset-top));left:0;right:0;margin:auto;width:max-content;max-width:calc(100% - 24px);z-index:60;border-radius:999px;padding:7px 16px;font-size:13.5px;font-weight:600;pointer-events:none}
 .expd{display:block;padding:6px 10px;font-size:14px;opacity:.8}
 .ov.lb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}.ov.lb img{max-height:78%}
+.plus,.send{-webkit-tap-highlight-color:transparent}.plus:active{transform:none}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -574,6 +575,7 @@ async function boot(u) {
     onValue(ref(db, "userChats/" + me.uid), s => { chats = s.val() || {}; saveLS("tx_ch_", chats); renderChats(); if (active && chats[active]) markRead(active); },
       err => toast("Accès refusé : vérifiez les règles de la base."))
   );
+  { let offT; unsubs.push(onValue(ref(db, ".info/connected"), sn => { clearTimeout(offT); if (sn.val()) $("#offBar").classList.add("hidden"); else offT = setTimeout(() => $("#offBar").classList.remove("hidden"), 3000); })); }
   unsubs.push(onValue(ref(db, "scheduled/" + me.uid), s => { sched = s.val() || {}; schedBar(); flush(); }, () => {}), (() => { const t = setInterval(flush, 4000); return () => clearInterval(t); })());
 }
 function teardown() {
@@ -820,7 +822,8 @@ document.addEventListener("click", e => { const b = e.target.closest("[data-lg]"
 
 function sheet(html, on) {
   const o = document.createElement("div"); o.className = "ov"; o.innerHTML = `<div class="sh glass">${html}</div>`;
-  o.addEventListener("click", e => { if (e.target === o) return o.remove(); const b = e.target.closest("[data-a]"); if (b) on ? on(b.dataset, o) : o.remove(); });
+  o.addEventListener("pointerdown", e => { if (e.target === o) o.remove(); });
+  o.addEventListener("click", e => { const b = e.target.closest("[data-a]"); if (b) on ? on(b.dataset, o) : o.remove(); });
   document.body.appendChild(o); return o;
 }
 function menu(items, rect, right, clone) {
@@ -834,7 +837,7 @@ function menu(items, rect, right, clone) {
   const left = Math.max(10, Math.min(innerWidth - w - 10, right ? rect.right - w : rect.left));
   m.style.cssText = `top:${top}px;left:${left}px;--o:${right ? "100%" : "0"} ${flip ? "100%" : "0"}`;
   m.onclick = e => { const b = e.target.closest(".mi"); if (b) { const it = items[b.dataset.i]; o.remove(); it.a(); } };
-  o.addEventListener("click", e => { if (e.target === o) o.remove(); });
+  o.addEventListener("pointerdown", e => { if (e.target === o) o.remove(); });
   return m;
 }
 function slide(e, mn) {
@@ -842,7 +845,7 @@ function slide(e, mn) {
   const hit = ev => { const t = document.elementFromPoint(ev.clientX, ev.clientY)?.closest(".mi"), n = t && mn.contains(t) ? t : null; if (n !== cur) { cur?.classList.remove("on"); cur = n; if (cur) { cur.classList.add("on"); navigator.vibrate?.(6); } } };
   const mv = ev => { if (ev.pointerId === id) hit(ev); };
   const off = () => { removeEventListener("pointermove", mv); removeEventListener("pointerup", up); removeEventListener("pointercancel", off); };
-  const up = ev => { if (ev.pointerId !== id) return; off(); if (cur) cur.click(); };
+  const up = ev => { if (ev.pointerId !== id) return; off(); if (cur) cur.click(); swallowClick(); };
   addEventListener("pointermove", mv); addEventListener("pointerup", up); addEventListener("pointercancel", off);
 }
 addEventListener("touchmove", e => { if ($(".mn")) e.preventDefault(); }, { passive: false });
@@ -892,33 +895,33 @@ async function put(e) {
   if (e.kind) up[`media/${cid}/${e.key}`] = { mime: e.mime, b64: e.b64 };
   await update(ref(db), up);
 }
+const fatal = x => /permission|denied/i.test(String((x && (x.code || x.message)) || ""));
+function trySend(e) {
+  if (inflight.has(e.key)) return; inflight.add(e.key);
+  put(e).then(() => obSet(obGet().filter(x => x.key !== e.key)), x => {
+    if (fatal(x)) { obSet(obGet().filter(y => y.key !== e.key)); toast("Envoi refusé par Firebase : republiez database.rules.json."); }
+    else toast("Envoi en attente de connexion…");
+  }).finally(() => inflight.delete(e.key));
+}
 async function sendMsg(other, text, media) {
   const cid = chatId(me.uid, other), key = push(ref(db, `chats/${cid}/messages`)).key, e = { key, to: other, text, at: Date.now(), ...media };
   if (media) idbSet(`${cid}/${key}`, { mime: media.mime, b64: media.b64 });
-  obSet([...obGet(), e]);
-  if (!navigator.onLine) {
-    if (active === other) addMsg({ k: key, from: me.uid, text, ts: e.at, pend: 1, ...media });
-    toast("Hors ligne : message gardé, envoi au retour du réseau."); return;
-  }
-  inflight.add(key);
-  try { await put(e); obSet(obGet().filter(x => x.key !== key)); } catch (x) { toast("Envoi en attente…"); }
-  inflight.delete(key);
+  obSet([...obGet(), e]); trySend(e);
 }
 let obBusy = false;
 async function flushOb() {
-  if (!me || obBusy || !navigator.onLine) return; obBusy = true;
+  if (!me || obBusy) return; obBusy = true;
   try {
     for (const e of obGet()) {
       if (inflight.has(e.key)) continue;
       try {
         const sn = await get(ref(db, `chats/${chatId(me.uid, e.to)}/messages/${e.key}`));
-        if (!sn.exists()) await put(e);
-        obSet(obGet().filter(x => x.key !== e.key));
+        if (sn.exists()) obSet(obGet().filter(x => x.key !== e.key)); else trySend(e);
       } catch (x) { break; }
     }
   } finally { obBusy = false; }
 }
-const showOff = () => $("#offBar").classList.toggle("hidden", navigator.onLine);
+const showOff = () => {};
 addEventListener("online", () => { showOff(); flushOb(); flush(); });
 addEventListener("offline", showOff);
 const lastKey = () => [...M.values()].pop()?.k;
@@ -1015,6 +1018,7 @@ $("#plus").addEventListener("pointerdown", e => {
   const sb = $(".send"); let lp = false;
   sb.addEventListener("pointerdown", () => { lp = false; sb._t = setTimeout(() => { lp = true; navigator.vibrate?.(12); schedSheet(); }, 450); });
   ["pointerup", "pointerleave", "pointercancel"].forEach(n => sb.addEventListener(n, () => clearTimeout(sb._t)));
+  sb.addEventListener("pointerup", () => { if (lp) swallowClick(); });
   sb.addEventListener("click", e => { if (lp) { e.preventDefault(); lp = false; } });
 }
 
@@ -1097,11 +1101,16 @@ const idbSet = async (k, v) => { const d = await idb; if (d) try { d.transaction
 /* base64 → Blob (décodage à l'arrivée) */
 const b64Blob = (b64, mime) => { const bin = atob(b64), a = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); return new Blob([a], { type: mime }); };
 const mediaIO = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { mediaIO.unobserve(en.target); loadMedia(en.target); } }), { rootMargin: "300px" });
-function setMedia(el, mime, b64) { el._mime = mime; el.querySelector("img,audio").src = URL.createObjectURL(b64Blob(b64, mime)); }
+function setMedia(el, mime, b64) {
+  el._mime = mime; const t = el.querySelector("img,audio"), box = $("#msgs"), stick = box.scrollHeight - box.scrollTop - box.clientHeight < 220;
+  if (t.tagName === "IMG") t.onload = () => { t.style.aspectRatio = "auto"; if (stick) box.scrollTop = box.scrollHeight; };
+  t.src = URL.createObjectURL(b64Blob(b64, mime));
+}
+function swallowClick() { const f = c => { c.stopPropagation(); c.preventDefault(); }; addEventListener("click", f, { capture: true, once: true }); setTimeout(() => removeEventListener("click", f, true), 700); }
 function initMedia(el, m) {
   el.classList.add("media"); el.dataset.media = m.kind; el._m = m; el._cid = chatId(me.uid, active);
   el.innerHTML = m.kind === "img" ? "<img alt=\"\">" : "<audio controls preload=\"metadata\"></audio>";
-  if (m.kind === "img" && m.w) el.firstChild.style.aspectRatio = m.w + "/" + m.h;
+  if (m.kind === "img") el.firstChild.style.aspectRatio = m.w ? m.w + "/" + m.h : "4/3";
   if (m.b64) setMedia(el, m.mime, m.b64); else mediaIO.observe(el);
 }
 const DAY = 864e5, rdSet = new Set();
