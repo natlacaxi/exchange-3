@@ -1317,7 +1317,7 @@ $("#msgs").addEventListener("click", e => {
 /* ---------- notifications ---------- */
 // Web Push gratuit : clé publique + adresse du relais Cloudflare (voir cloudflare-worker/LISEZMOI.txt)
 const PUSH_PUB = "BA8gufdIkmxTX_fCIfkX8CP9l_8uvU5pL9VMuxO6PN68-PZ7_11YR2qecJyBRKCtqcTus8G2tju6Abfml7yKXs4";
-const RELAY_URL = "";
+const RELAY_URL = "https://talco-push.antoineclaudeai.workers.dev";
 const u8 = b => Uint8Array.from(atob(b.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0));
 async function ping(to) {
   if (!RELAY_URL || !me) return;
