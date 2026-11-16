@@ -274,6 +274,50 @@ body{position:fixed;inset:0;width:100%}
 .expd{display:block;padding:6px 10px;font-size:14px;opacity:.8}
 .ov.lb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}.ov.lb img{max-height:78%}
 .plus,.send{-webkit-tap-highlight-color:transparent}.plus:active{transform:none}
+.m.me.tail{border-bottom-right-radius:5px}.m.them.tail{border-bottom-left-radius:5px}
+.m,.m *,.cm,.cm *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.m img{-webkit-user-drag:none}
+.m[data-rx]{margin-top:16px}
+.rx{position:absolute;top:-14px;padding:2px 7px;border-radius:999px;font-size:14px;line-height:1.3;background:var(--recv);color:var(--txt);box-shadow:0 0 0 2px var(--bg),0 2px 6px rgba(0,0,0,.2);white-space:nowrap}
+.m.me .rx{left:-10px}.m.them .rx{right:-10px}.rx.mine{background:var(--blue);color:#fff}
+.emo{display:flex;gap:2px;padding:4px 4px 8px;justify-content:space-between}
+.em{font-size:26px;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;transition:transform .25s cubic-bezier(.3,1.6,.5,1),background .12s}
+.em.on{transform:scale(1.4);background:rgba(120,120,128,.25)}
+/* ===== connexion v8 ===== */
+#auth{background:transparent}
+.auth-orbs{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.auth-orbs i{position:absolute;border-radius:50%;filter:blur(44px);opacity:.6;animation:orb 14s ease-in-out infinite alternate}
+.auth-orbs i:nth-child(1){width:46vmin;height:46vmin;background:#34c759;left:-8vmin;top:6vh}
+.auth-orbs i:nth-child(2){width:52vmin;height:52vmin;background:#0a84ff;right:-12vmin;bottom:4vh;animation-delay:-5s}
+.auth-orbs i:nth-child(3){width:36vmin;height:36vmin;background:#bf5af2;left:32vw;top:-10vmin;animation-delay:-9s}
+@keyframes orb{to{transform:translate(8vmin,-6vmin) scale(1.25)}}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}}
+@keyframes cardIn{from{opacity:0;transform:translateY(34px) scale(.94)}}
+@keyframes shine{to{background-position:300% 0}}
+@keyframes float{50%{transform:translateY(-7px) rotate(-2deg)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.auth-in{padding:30px 24px 22px;border-radius:36px;gap:14px;animation:cardIn .8s cubic-bezier(.2,.9,.3,1) backwards;transition:transform .25s}
+.auth-in.glass{backdrop-filter:blur(calc(14px + 28px*var(--lg))) saturate(1.6);-webkit-backdrop-filter:blur(calc(14px + 28px*var(--lg))) saturate(1.6)}
+.auth-in>*{animation:rise .7s cubic-bezier(.2,.9,.3,1) backwards}
+.auth-in>:nth-child(1){animation-delay:0.17s}.auth-in>:nth-child(2){animation-delay:0.24s}.auth-in>:nth-child(3){animation-delay:0.31s}.auth-in>:nth-child(4){animation-delay:0.38s}.auth-in>:nth-child(5){animation-delay:0.45s}.auth-in>:nth-child(6){animation-delay:0.52s}.auth-in>:nth-child(7){animation-delay:0.59s}.auth-in>:nth-child(8){animation-delay:0.66s}.auth-in>:nth-child(9){animation-delay:0.73s}.auth-in>:nth-child(10){animation-delay:0.80s}
+.logo-w{position:relative;display:grid;place-items:center;height:96px}
+.logo-w::before{content:"";position:absolute;width:100px;height:100px;border-radius:30px;background:conic-gradient(from 0deg,#34c759,#0a84ff,#bf5af2,#34c759);filter:blur(20px);opacity:.65;animation:spin 7s linear infinite}
+.logo-w .logo{position:relative;animation:float 5s ease-in-out infinite;box-shadow:0 0 0 5px rgba(255,255,255,.16),0 14px 34px rgba(0,0,0,.25)}
+.auth-in h1{background:linear-gradient(90deg,var(--txt),#0a84ff,#34c759,#bf5af2,var(--txt));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:rise .7s cubic-bezier(.2,.9,.3,1) .25s backwards,shine 7s linear infinite}
+.auth-in .sub{transition:opacity .3s;color:var(--txt);opacity:.75}
+.auth-in .group{background:rgba(255,255,255,calc(.08 + .1*var(--lg)*var(--g-a)));backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:20px;box-shadow:inset 0 0 0 .5px var(--g-edge);overflow:hidden}
+.auth-in .field:focus{box-shadow:inset 0 0 0 1.5px rgba(10,132,255,.7)}
+.auth-in .btn.big{background:linear-gradient(120deg,#34c759,#0a84ff,#bf5af2,#34c759);background-size:300% 100%;box-shadow:0 12px 30px rgba(10,132,255,.4);animation:rise .7s cubic-bezier(.2,.9,.3,1) .85s backwards,shine 8s linear infinite}
+.m{touch-action:pan-y;transition:box-shadow .25s}
+.m.hl{box-shadow:0 0 0 3px rgba(10,132,255,.55)}
+.swi{position:absolute;top:50%;margin-top:-12px;width:24px;height:24px;color:var(--sub);pointer-events:none}
+.swi svg{width:24px;height:24px}
+.qt{border-left:3px solid rgba(255,255,255,.75);padding:2px 8px;margin:0 0 5px;border-radius:4px;background:rgba(255,255,255,.18);font-size:.82em;line-height:1.25;display:flex;flex-direction:column;white-space:nowrap;overflow:hidden;max-width:100%;cursor:pointer}
+.qt b{font-weight:700}.qt span{overflow:hidden;text-overflow:ellipsis;opacity:.92}
+.m.them .qt{border-left-color:var(--blue);background:rgba(120,120,128,.18)}
+.rpbar{position:absolute;left:14px;right:14px;bottom:calc(68px + env(safe-area-inset-bottom));pointer-events:auto;border-radius:20px;padding:8px 12px;display:flex;align-items:center;gap:10px}
+.rpt{flex:1;min-width:0;border-left:3px solid var(--blue);padding-left:8px;display:flex;flex-direction:column;font-size:13.5px}
+.rpt b{color:var(--blue);font-size:13px}.rpt span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--sub)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -282,11 +326,12 @@ body{position:fixed;inset:0;width:100%}
 
 <!-- AUTH -->
 <section id="auth" class="hidden">
+  <div class="auth-orbs"><i></i><i></i><i></i></div>
   <button class="glass get-pill hidden" id="instAuth" data-inst>Installer</button>
-  <form class="auth-in" id="authForm" autocomplete="on" novalidate>
-    <img class="logo" src="icon-192.png" alt="TalcoExchange">
+  <form class="auth-in glass" id="authForm" autocomplete="on" novalidate>
+    <div class="logo-w"><img class="logo" src="icon-192.png" alt="TalcoExchange"></div>
     <h1>TalcoExchange</h1>
-    <p class="sub">Discutez en temps réel avec vos amis.</p>
+    <p class="sub" id="authTag">Discutez en temps réel avec vos amis.</p>
     <div class="seg" id="seg"><i></i>
       <button type="button" id="segLogin" class="on">Connexion</button>
       <button type="button" id="segReg">Créer un compte</button>
@@ -352,6 +397,7 @@ body{position:fixed;inset:0;width:100%}
       <form class="composer" id="composer" autocomplete="off">
         <div class="chipbar glass hidden" id="edBar"><span>Modifier le message</span><button type="button" id="edX" aria-label="Annuler">✕</button></div>
         <button class="chipbar glass hidden" type="button" id="schedBar"></button>
+        <div class="rpbar glass hidden" id="rpBar"><div class="rpt"><b id="rpWho"></b><span id="rpTx"></span></div><button type="button" id="rpX" aria-label="Annuler la réponse">✕</button></div>
         <div class="cbox glass">
           <button class="plus" type="button" id="plus" aria-label="Plus"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
           <input id="msgIn" placeholder="Message texte" maxlength="1000" enterkeyhint="send" autocomplete="off">
@@ -572,16 +618,16 @@ async function boot(u) {
   unsubs.push(
     onValue(ref(db, "friends/" + me.uid), s => { friends = s.val() || {}; saveLS("tx_fr_", friends); renderFriends(); if (curTab === "search") renderResults(); }),
     onValue(ref(db, "requests/" + me.uid), s => { reqIn = s.val() || {}; renderFriends(); updateBadge(); if (curTab === "search") renderResults(); }),
-    onValue(ref(db, "userChats/" + me.uid), s => { chats = s.val() || {}; saveLS("tx_ch_", chats); renderChats(); if (active && chats[active]) markRead(active); },
+    onValue(ref(db, "userChats/" + me.uid), s => { chats = s.val() || {}; saveLS("tx_ch_", chats); notifyNew(chats); renderChats(); if (active && chats[active]) markRead(active); },
       err => toast("Accès refusé : vérifiez les règles de la base."))
   );
-  { let offT; unsubs.push(onValue(ref(db, ".info/connected"), sn => { clearTimeout(offT); if (sn.val()) $("#offBar").classList.add("hidden"); else offT = setTimeout(() => $("#offBar").classList.remove("hidden"), 3000); })); }
+  regPush(); { let offT; unsubs.push(onValue(ref(db, ".info/connected"), sn => { clearTimeout(offT); if (sn.val()) $("#offBar").classList.add("hidden"); else offT = setTimeout(() => $("#offBar").classList.remove("hidden"), 3000); })); }
   unsubs.push(onValue(ref(db, "scheduled/" + me.uid), s => { sched = s.val() || {}; schedBar(); flush(); }, () => {}), (() => { const t = setInterval(flush, 4000); return () => clearInterval(t); })());
 }
 function teardown() {
   unsubs.forEach(f => { try { f(); } catch (e) {} }); unsubs = [];
   if (msgUnsub) { msgUnsub(); msgUnsub = null; }
-  msgToken++; M.clear(); sched = {}; me = null; friends = {}; reqIn = {}; chats = {}; active = null; lastResults = [];
+  msgToken++; M.clear(); sched = {}; seen = null; me = null; friends = {}; reqIn = {}; chats = {}; active = null; lastResults = [];
   $("#app").classList.remove("chat-open"); $("#chat").classList.add("hidden"); $("#noChat").classList.remove("hidden");
   ["#p-chats", "#p-friends", "#p-settings", "#results"].forEach(s => $(s).innerHTML = "");
   $("#q").value = "";
@@ -630,12 +676,12 @@ async function openChat(uid) {
   const u = await getUser(uid);
   if (token !== msgToken) return;
   $("#chAv").innerHTML = avatar(u, "lg"); $("#chName").textContent = u.name; $("#chId").textContent = "@" + u.id;
-  $("#msgs").innerHTML = ""; lastMsgTs = 0; lastFrom = null; lastEl = null; M.clear(); HID = hidSet(); endEdit();
+  $("#msgs").innerHTML = ""; lastMsgTs = 0; lastFrom = null; lastEl = null; M.clear(); HID = hidSet(); endEdit(); clearReply();
   $("#noChat").classList.add("hidden"); $("#chat").classList.remove("hidden");
   $("#app").classList.add("chat-open"); pcApply();
   markRead(uid); renderChats();
   try { JSON.parse(localStorage.getItem(mcKey()) || "[]").forEach(m => addMsg(m, 1)); } catch (e) {}
-  obGet().filter(e => e.to === uid).forEach(e => addMsg({ k: e.key, from: me.uid, text: e.text, ts: e.at, pend: 1, kind: e.kind, mime: e.mime, b64: e.b64, dur: e.dur, w: e.w, h: e.h }, 1));
+  obGet().filter(e => e.to === uid).forEach(e => addMsg({ k: e.key, from: me.uid, text: e.text, ts: e.at, pend: 1, kind: e.kind, mime: e.mime, b64: e.b64, dur: e.dur, w: e.w, h: e.h, reply: e.reply }, 1));
   const q = query(ref(db, `chats/${chatId(me.uid, uid)}/messages`), limitToLast(150));
   const u1 = onChildAdded(q, s => {
     if (token !== msgToken) return;
@@ -646,7 +692,7 @@ async function openChat(uid) {
     if (token !== msgToken) return;
     const v = { ...s.val(), k: s.key }; M.set(s.key, v);
     const el = $(`#msgs [data-k="${s.key}"]`);
-    if (el) { if (!v.kind) el.textContent = v.text; el.classList.remove("pend"); if (v.edited) el.dataset.ed = 1; else delete el.dataset.ed; }
+    if (el) { if (!v.kind) el.textContent = v.text; renderRx(el, v); el.classList.remove("pend"); if (v.edited) el.dataset.ed = 1; else delete el.dataset.ed; }
   });
   const u3 = onChildRemoved(q, s => { if (token !== msgToken) return; M.delete(s.key); rerender(); });
   msgUnsub = () => { u1(); u2(); u3(); };
@@ -657,7 +703,7 @@ let lastMsgTs = 0, lastFrom = null, lastEl = null;
 function addMsg(m, quiet) {
   M.set(m.k, m); if (HID.has(m.k)) return;
   const ex = $(`#msgs [data-k="${m.k}"]`);
-  if (ex) { ex.classList.remove("pend"); if (!m.kind) ex.textContent = m.text; saveCache(); return; }
+  if (ex) { ex.classList.remove("pend"); if (!m.kind) ex.textContent = m.text; renderRx(ex, m); saveCache(); return; }
   const box = $("#msgs"), near = box.scrollHeight - box.scrollTop - box.clientHeight < 160;
   const ts = typeof m.ts === "number" ? m.ts : Date.now();
   if (!lastMsgTs || ts - lastMsgTs > 3600e3 || new Date(ts).toDateString() !== new Date(lastMsgTs).toDateString()) {
@@ -668,7 +714,7 @@ function addMsg(m, quiet) {
   
   const el = document.createElement("div");
   el.className = `m ${mine ? "me" : "them"} tail ${lastFrom !== m.from ? "first" : ""}`;
-  if (m.kind) initMedia(el, m); else el.textContent = m.text; if (m.pend) el.classList.add("pend"); el.title = fmtTime(ts); el.dataset.k = m.k; if (m.edited) el.dataset.ed = 1; if (quiet) el.style.animation = "none";
+  if (m.kind) initMedia(el, m); else el.textContent = m.text; renderRx(el, m); if (m.pend) el.classList.add("pend"); el.title = fmtTime(ts); el.dataset.k = m.k; if (m.edited) el.dataset.ed = 1; if (quiet) el.style.animation = "none";
   box.appendChild(el);
   if (mine) box.insertAdjacentHTML("beforeend", `<div class="status">Distribué</div>`);
   lastMsgTs = ts; lastFrom = m.from; lastEl = el;
@@ -683,10 +729,10 @@ $("#composer").addEventListener("submit", async e => {
   if (editing) { const k = editing; endEdit(); if (!text || text === M.get(k)?.text) return; try { await editMsg(k, text); } catch (x) { toast("Modification impossible."); } return; }
   if (!text) return;
   inp.value = ""; $("#composer").classList.remove("has");
-  try { await sendMsg(active, text); } catch (x) { toast("Message non envoyé."); inp.value = text; $("#composer").classList.add("has"); }
+  try { await sendMsg(active, text, undefined, takeReply()); } catch (x) { toast("Message non envoyé."); inp.value = text; $("#composer").classList.add("has"); }
 });
 $("#back").onclick = () => {
-  $("#app").classList.remove("chat-open"); active = null; msgToken++; endEdit(); schedBar();
+  $("#app").classList.remove("chat-open"); active = null; msgToken++; endEdit(); clearReply();
   if (msgUnsub) { msgUnsub(); msgUnsub = null; } renderChats();
 };
 
@@ -750,6 +796,8 @@ function renderSettings() {
     <div class="set-card"><div class="set-row"><div style="display:flex;gap:12px;align-items:center">${avatar(me)}<div><b>${esc(me.name)}</b><div style="color:var(--sub);font-size:14px">@${esc(me.id)}</div></div></div></div></div>
     <div class="sec">Profil</div>
     <div class="set-card"><div class="set-row" style="gap:8px"><input class="field" id="nameIn" value="${esc(me.name)}" maxlength="40" placeholder="Nom affiché" style="padding:10px 14px"><button class="btn sm" id="saveName">OK</button></div></div>
+    <div class="sec">Notifications</div>
+    <div class="set-card"><div class="set-row"><span>${"Notification" in window && Notification.permission === "granted" ? "Notifications activées" : "Notifications désactivées"}</span><button class="get" data-notif>${"Notification" in window && Notification.permission === "granted" ? "Tester" : "Activer"}</button></div></div>
     <div class="sec">Apparence</div>
     <div class="set-card"><div class="set-row" style="flex-direction:column;align-items:stretch;gap:8px"><div style="display:flex;justify-content:space-between"><span>Intensité Liquid Glass</span><b id="lgv">${Math.round(LG*100)}%</b></div><input type="range" id="lg" min="0" max="100" value="${Math.round(LG*100)}"><div class="chips"><button class="btn soft sm" data-lg="20">Discret</button><button class="btn soft sm" data-lg="70">Équilibré</button><button class="btn soft sm" data-lg="100">Max</button></div></div></div>
     <div class="set-card"><div class="set-row"><span>Style</span><div class="chips"><button class="btn soft sm" data-style="ios">iOS 27</button><button class="btn soft sm" data-style="mac">macOS</button></div></div></div>
@@ -826,23 +874,23 @@ function sheet(html, on) {
   o.addEventListener("click", e => { const b = e.target.closest("[data-a]"); if (b) on ? on(b.dataset, o) : o.remove(); });
   document.body.appendChild(o); return o;
 }
-function menu(items, rect, right, clone) {
+function menu(items, rect, right, clone, emo) {
   $$(".mn").forEach(x => x.remove());
   const o = document.createElement("div"); o.className = "ov mn"; if (clone) o.appendChild(clone);
   const m = document.createElement("div"); m.className = "cm glass";
-  m.innerHTML = items.map((it, i) => `<button type="button" class="mi ${it.red ? "red" : ""}" data-i="${i}"><span>${it.t}</span>${it.i}</button>`).join("");
+  m.innerHTML = (emo ? `<div class="emo">${emo.list.map(x => `<button type="button" class="em" data-e="${x}">${x}</button>`).join("")}</div>` : "") + items.map((it, i) => `<button type="button" class="mi ${it.red ? "red" : ""}" data-i="${i}"><span>${it.t}</span>${it.i}</button>`).join("");
   o.appendChild(m); document.body.appendChild(o);
   const w = m.offsetWidth, h = m.offsetHeight; let top = rect.bottom + 10, flip = false;
   if (top + h > innerHeight - 16) { top = Math.max(12, rect.top - h - 10); flip = true; }
   const left = Math.max(10, Math.min(innerWidth - w - 10, right ? rect.right - w : rect.left));
   m.style.cssText = `top:${top}px;left:${left}px;--o:${right ? "100%" : "0"} ${flip ? "100%" : "0"}`;
-  m.onclick = e => { const b = e.target.closest(".mi"); if (b) { const it = items[b.dataset.i]; o.remove(); it.a(); } };
+  m.onclick = e => { const x = e.target.closest(".em"); if (x) { o.remove(); emo.cb(x.dataset.e); return; } const b = e.target.closest(".mi"); if (b) { const it = items[b.dataset.i]; o.remove(); it.a(); } };
   o.addEventListener("pointerdown", e => { if (e.target === o) o.remove(); });
   return m;
 }
 function slide(e, mn) {
   const id = e.pointerId; let cur = null;
-  const hit = ev => { const t = document.elementFromPoint(ev.clientX, ev.clientY)?.closest(".mi"), n = t && mn.contains(t) ? t : null; if (n !== cur) { cur?.classList.remove("on"); cur = n; if (cur) { cur.classList.add("on"); navigator.vibrate?.(6); } } };
+  const hit = ev => { const t = document.elementFromPoint(ev.clientX, ev.clientY)?.closest(".mi,.em"), n = t && mn.contains(t) ? t : null; if (n !== cur) { cur?.classList.remove("on"); cur = n; if (cur) { cur.classList.add("on"); navigator.vibrate?.(6); } } };
   const mv = ev => { if (ev.pointerId === id) hit(ev); };
   const off = () => { removeEventListener("pointermove", mv); removeEventListener("pointerup", up); removeEventListener("pointercancel", off); };
   const up = ev => { if (ev.pointerId !== id) return; off(); if (cur) cur.click(); swallowClick(); };
@@ -889,7 +937,7 @@ const obSet = a => { try { localStorage.setItem(obKey(), JSON.stringify(a)); } c
 const inflight = new Set();
 async function put(e) {
   const cid = chatId(me.uid, e.to), meta = { last: e.text.slice(0, 120), ts: serverTimestamp(), from: me.uid };
-  const msg = { from: me.uid, text: e.text, ts: serverTimestamp() };
+  const msg = { from: me.uid, text: e.text, ts: serverTimestamp() }; if (e.reply) msg.reply = e.reply;
   if (e.kind) { msg.kind = e.kind; if (e.dur) msg.dur = e.dur; if (e.w) { msg.w = e.w; msg.h = e.h; } }
   const up = { [`chats/${cid}/messages/${e.key}`]: msg, [`userChats/${me.uid}/${e.to}`]: meta, [`userChats/${e.to}/${me.uid}`]: meta };
   if (e.kind) up[`media/${cid}/${e.key}`] = { mime: e.mime, b64: e.b64 };
@@ -898,13 +946,13 @@ async function put(e) {
 const fatal = x => /permission|denied/i.test(String((x && (x.code || x.message)) || ""));
 function trySend(e) {
   if (inflight.has(e.key)) return; inflight.add(e.key);
-  put(e).then(() => obSet(obGet().filter(x => x.key !== e.key)), x => {
+  put(e).then(() => { obSet(obGet().filter(x => x.key !== e.key)); ping(e.to); }, x => {
     if (fatal(x)) { obSet(obGet().filter(y => y.key !== e.key)); toast("Envoi refusé par Firebase : republiez database.rules.json."); }
     else toast("Envoi en attente de connexion…");
   }).finally(() => inflight.delete(e.key));
 }
-async function sendMsg(other, text, media) {
-  const cid = chatId(me.uid, other), key = push(ref(db, `chats/${cid}/messages`)).key, e = { key, to: other, text, at: Date.now(), ...media };
+async function sendMsg(other, text, media, reply) {
+  const cid = chatId(me.uid, other), key = push(ref(db, `chats/${cid}/messages`)).key, e = { key, to: other, text, at: Date.now(), ...media, ...(reply ? { reply } : {}) };
   if (media) idbSet(`${cid}/${key}`, { mime: media.mime, b64: media.b64 });
   obSet([...obGet(), e]); trySend(e);
 }
@@ -930,7 +978,7 @@ async function editMsg(k, text) {
   if (lastKey() === k) { up[`userChats/${me.uid}/${o}/last`] = text.slice(0, 120); up[`userChats/${o}/${me.uid}/last`] = text.slice(0, 120); }
   await update(ref(db), up);
 }
-function startEdit(k) { editing = k; const i = $("#msgIn"); i.value = M.get(k).text; $("#composer").classList.add("has"); $("#edBar").classList.remove("hidden"); $("#schedBar").classList.add("hidden"); i.focus(); }
+function startEdit(k) { clearReply(); editing = k; const i = $("#msgIn"); i.value = M.get(k).text; $("#composer").classList.add("has"); $("#edBar").classList.remove("hidden"); $("#schedBar").classList.add("hidden"); i.focus(); }
 function endEdit() { editing = null; $("#edBar").classList.add("hidden"); $("#msgIn").value = ""; $("#composer").classList.remove("has"); schedBar(); }
 $("#edX").onclick = endEdit;
 function rerender() { const box = $("#msgs"); box.innerHTML = ""; lastMsgTs = 0; lastFrom = null; lastEl = null; [...M.values()].forEach(m => addMsg(m, 1)); box.scrollTop = box.scrollHeight; }
@@ -953,24 +1001,24 @@ function msgMenu(el, e) {
   const k = el.dataset.k, m = M.get(k); if (!m || $(".mn") || !me) return;
   const mine = m.from === me.uid, r = el.getBoundingClientRect(), c = el.cloneNode(true);
   c.style.cssText = `position:fixed;left:${r.left}px;top:${r.top}px;width:${r.width}px;max-width:none;margin:0;z-index:2;animation:none;transform:scale(1.04)`;
-  const it = []; if (mine && !m.kind) it.push({ t: "Modifier", i: I.edit, a: () => startEdit(k) });
+  const it = [{ t: "Répondre", i: I.reply, a: () => startReply(k) }]; if (mine && !m.kind) it.push({ t: "Modifier", i: I.edit, a: () => startEdit(k) });
   if (!m.kind) it.push({ t: "Copier", i: I.copy, a: () => { navigator.clipboard?.writeText(m.text); toast("Copié"); } });
   if (m.kind) it.push({ t: "Enregistrer", i: I.dl, a: () => dlMedia(el) });
   it.push({ t: mine ? "Supprimer" : "Supprimer pour moi", i: I.trash, red: 1, a: () => delMsg(k) });
-  const mn = menu(it, r, mine, c); if (e) slide(e, mn);
+  const mn = menu(it, r, mine, c, { list: ["❤️", "👍", "😂", "😮", "😢", "🙏"], cb: x => react(k, x) }); if (e) slide(e, mn);
 }
 {
   const box = $("#msgs"); let lp, px, py;
   box.addEventListener("pointerdown", e => { const el = e.target.closest(".m"); if (!el || e.button) return; px = e.clientX; py = e.clientY; clearTimeout(lp); lp = setTimeout(() => { navigator.vibrate?.(12); msgMenu(el, e); }, 380); });
   box.addEventListener("pointermove", e => { if (Math.hypot(e.clientX - px, e.clientY - py) > 9) clearTimeout(lp); });
   ["pointerup", "pointercancel", "pointerleave"].forEach(n => box.addEventListener(n, () => clearTimeout(lp)));
-  box.addEventListener("contextmenu", e => { const el = e.target.closest(".m"); if (el) { e.preventDefault(); msgMenu(el); } });
+  document.addEventListener("contextmenu", e => { if (e.target.closest("#msgs, .mn, #plus, .send")) { e.preventDefault(); const el = e.target.closest("#msgs .m"); if (el) msgMenu(el); } });
 }
 
 function schedBar() {
   const n = active ? Object.values(sched).filter(s => s.to === active).length : 0, b = $("#schedBar");
   b.innerHTML = `${I.clock.replace('class="i"', 'class="i" style="width:16px;height:16px"')} ${n} programmé${n > 1 ? "s" : ""}`;
-  b.classList.toggle("hidden", !n || !!editing);
+  b.classList.toggle("hidden", !n || !!editing || !!replying);
 }
 $("#schedBar").onclick = () => schedList();
 function schedSheet(sid) {
@@ -1166,7 +1214,7 @@ function shrinkImg(file) {
 }
 $("#imgIn").addEventListener("change", async e => {
   const f = e.target.files[0]; e.target.value = ""; if (!f || !active) return;
-  try { const d = await shrinkImg(f); await sendMsg(active, "📷 Photo", { kind: "img", mime: "image/jpeg", b64: d.b64, w: d.w, h: d.h }); } catch (x) { toast("Photo impossible."); }
+  try { const d = await shrinkImg(f); await sendMsg(active, "📷 Photo", { kind: "img", mime: "image/jpeg", b64: d.b64, w: d.w, h: d.h }, takeReply()); } catch (x) { toast("Photo impossible."); }
 });
 
 async function recSheet() {
@@ -1181,7 +1229,7 @@ async function recSheet() {
     const blob = new Blob(ch, { type: rec.mimeType || mime || "audio/webm" }), dur = Math.round((Date.now() - t0) / 1000);
     const b64 = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result.split(",")[1]); fr.readAsDataURL(blob); });
     if (b64.length > 1.2e6) return toast("Vocal trop long.");
-    await sendMsg(active, "🎤 Message vocal", { kind: "aud", mime: blob.type, b64, dur });
+    await sendMsg(active, "🎤 Message vocal", { kind: "aud", mime: blob.type, b64, dur }, takeReply());
   };
   rec.start();
   const sh = sheet(`<h3>Message vocal</h3><p id="rT" style="font-size:22px">0:00</p><button class="btn big" data-a="ok">Envoyer</button><button class="btn soft big" data-a="x">Annuler</button>`, (d, o) => { send = d.a === "ok"; o.remove(); if (rec.state !== "inactive") rec.stop(); });
@@ -1198,6 +1246,121 @@ const BL = { wb: 0, rb: 13 };
 function setBl(k, v) { BL[k] = v; document.documentElement.style.setProperty("--" + k, v + "px"); localStorage.setItem("tx_" + k, v); const l = $("#" + k + "v"); if (l) l.textContent = v + "px"; }
 for (const k in BL) { const v = localStorage.getItem("tx_" + k); setBl(k, v === null ? BL[k] : +v); }
 document.addEventListener("input", e => { if (e.target.dataset && e.target.dataset.bl) setBl(e.target.dataset.bl, +e.target.value); });
+
+/* ---------- réactions emoji ---------- */
+function renderRx(el, m) {
+  el.querySelector(".qt")?.remove();
+  if (m.reply) { const q = document.createElement("div"); q.className = "qt"; q.dataset.go = m.reply.k; q.innerHTML = `<b>${esc(m.reply.from === me.uid ? "Vous" : $("#chName").textContent)}</b><span>${esc(m.reply.text)}</span>`; el.insertBefore(q, el.firstChild); }
+  el.querySelector(".rx")?.remove(); const r = m.reacts ? Object.values(m.reacts) : [];
+  if (!r.length) { delete el.dataset.rx; return; }
+  const c = {}; r.forEach(x => c[x] = (c[x] || 0) + 1);
+  const b = document.createElement("span"); b.className = "rx" + (m.reacts[me.uid] ? " mine" : "");
+  b.textContent = Object.entries(c).map(([x, n]) => n > 1 ? x + n : x).join(" ");
+  el.appendChild(b); el.dataset.rx = 1;
+}
+async function react(k, x) {
+  const m = M.get(k); if (!m || !me || !active) return;
+  const path = ref(db, `chats/${chatId(me.uid, active)}/messages/${k}/reacts/${me.uid}`);
+  try { await (m.reacts && m.reacts[me.uid] === x ? remove(path) : set(path, x)); } catch (e) { toast("Réaction impossible."); }
+}
+
+/* ---------- connexion : accroche qui change + léger relief ---------- */
+{
+  const tg = $("#authTag"), L = ["Discutez en temps réel avec vos amis.", "Photos et messages vocaux.", "Programmez vos envois.", "Un design Liquid Glass."]; let i = 0;
+  setInterval(() => { tg.style.opacity = 0; setTimeout(() => { i = (i + 1) % L.length; tg.textContent = L[i]; tg.style.opacity = ""; }, 300); }, 3400);
+  const f = $("#authForm");
+  $("#auth").addEventListener("pointermove", e => { if (e.pointerType === "touch") return; f.style.transform = `perspective(900px) rotateY(${(e.clientX / innerWidth - .5) * 7}deg) rotateX(${-(e.clientY / innerHeight - .5) * 7}deg)`; });
+  $("#auth").addEventListener("pointerleave", () => { f.style.transform = ""; });
+}
+
+/* ---------- répondre à un message ---------- */
+let replying = null;
+I.reply = '<svg class="i" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 6 6v3"/></svg>';
+function startReply(k) {
+  const m = M.get(k); if (!m) return; endEdit();
+  replying = { k, from: m.from, text: (m.kind ? (m.kind === "img" ? "📷 Photo" : "🎤 Message vocal") : m.text).slice(0, 120) };
+  $("#rpWho").textContent = m.from === me.uid ? "Vous" : $("#chName").textContent; $("#rpTx").textContent = replying.text;
+  $("#rpBar").classList.remove("hidden"); $("#schedBar").classList.add("hidden"); $("#msgIn").focus();
+}
+function clearReply() { replying = null; $("#rpBar").classList.add("hidden"); schedBar(); }
+function takeReply() { const r = replying; if (r) clearReply(); return r || undefined; }
+$("#rpX").onclick = clearReply;
+$("#msgs").addEventListener("click", e => {
+  const q = e.target.closest(".qt"); if (!q) return;
+  const t = $(`#msgs [data-k="${q.dataset.go}"]`); if (!t) return toast("Message d’origine introuvable.");
+  t.scrollIntoView({ block: "center", behavior: "smooth" }); t.classList.add("hl"); setTimeout(() => t.classList.remove("hl"), 1000);
+});
+/* glisser le message vers le centre pour répondre */
+{
+  const box = $("#msgs"); let sw = null;
+  box.addEventListener("pointerdown", e => { const el = e.target.closest(".m"); if (!el || e.button) return; sw = { el, x: e.clientX, y: e.clientY, id: e.pointerId, on: false, dir: el.classList.contains("me") ? -1 : 1, go: false }; });
+  box.addEventListener("pointermove", e => {
+    if (!sw || e.pointerId !== sw.id) return; const dx = (e.clientX - sw.x) * sw.dir, dy = e.clientY - sw.y;
+    if (!sw.on) {
+      if (dx > 12 && dx > Math.abs(dy) * 1.6) {
+        sw.on = true; sw.el.style.animation = "none"; sw.el.style.transition = "none";
+        const i = document.createElement("span"); i.className = "swi"; i.style[sw.dir > 0 ? "left" : "right"] = "-36px"; i.innerHTML = I.reply; sw.el.appendChild(i);
+        try { box.setPointerCapture(e.pointerId); } catch (x) {}
+      } else return;
+    }
+    sw.el.style.transform = `translateX(${sw.dir * Math.max(0, Math.min(80, dx)) * .7}px)`;
+    const go = dx > 70; if (go !== sw.go) { sw.go = go; if (go) navigator.vibrate?.(10); const i = sw.el.querySelector(".swi"); if (i) i.style.color = go ? "var(--blue)" : ""; }
+  });
+  const end = e => {
+    if (!sw || e.pointerId !== sw.id) return; const s = sw; sw = null; if (!s.on) return;
+    s.el.style.transition = "transform .3s cubic-bezier(.3,1.5,.5,1), box-shadow .25s"; s.el.style.transform = ""; s.el.querySelector(".swi")?.remove();
+    if (s.go) startReply(s.el.dataset.k); swallowClick();
+  };
+  box.addEventListener("pointerup", end); box.addEventListener("pointercancel", end);
+}
+
+/* ---------- notifications ---------- */
+// Web Push gratuit : clé publique + adresse du relais Cloudflare (voir cloudflare-worker/LISEZMOI.txt)
+const PUSH_PUB = "BA8gufdIkmxTX_fCIfkX8CP9l_8uvU5pL9VMuxO6PN68-PZ7_11YR2qecJyBRKCtqcTus8G2tju6Abfml7yKXs4";
+const RELAY_URL = "";
+const u8 = b => Uint8Array.from(atob(b.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0));
+async function ping(to) {
+  if (!RELAY_URL || !me) return;
+  try {
+    const sn = await get(ref(db, `push/${to}`)); if (!sn.exists()) return;
+    const tok = await auth.currentUser.getIdToken();
+    await fetch(RELAY_URL, { method: "POST", headers: { Authorization: "Bearer " + tok, "Content-Type": "application/json" }, body: JSON.stringify({ endpoints: Object.values(sn.val()) }) });
+  } catch (x) { /* le message est parti, seule la notification manque */ }
+}
+let seen = null;
+function notif(title, body, tag) {
+  if (!("Notification" in window) || Notification.permission !== "granted" || !navigator.serviceWorker) return;
+  navigator.serviceWorker.ready.then(r => r.showNotification(title, { body, icon: "icon-192.png", badge: "favicon-32.png", tag: "tx-" + tag, renotify: true, data: { open: tag } })).catch(() => {});
+}
+function notifyNew(c) {
+  if (!seen) { seen = {}; for (const u in c) seen[u] = c[u].ts || 0; return; }
+  for (const u in c) {
+    const v = c[u], t = v.ts || 0;
+    if (t > (seen[u] || 0) && v.from !== me.uid && !(document.visibilityState === "visible" && active === u)) {
+      getUser(u).then(pr => { const body = v.last || "Nouveau message", nm = pr.name || pr.id; if (document.visibilityState === "visible") toast(nm + " : " + body); else notif(nm, body, u); });
+    }
+    seen[u] = Math.max(seen[u] || 0, t);
+  }
+}
+async function regPush() {
+  if (!me || !("Notification" in window) || !("PushManager" in window) || Notification.permission !== "granted") return;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const sub = (await reg.pushManager.getSubscription()) || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: u8(PUSH_PUB) });
+    const id = btoa(sub.endpoint).replace(/[^A-Za-z0-9]/g, "").slice(-32);
+    await set(ref(db, `push/${me.uid}/${id}`), sub.endpoint);
+  } catch (x) { /* les notifications locales restent actives */ }
+}
+document.addEventListener("click", async e => {
+  if (!e.target.closest("[data-notif]")) return;
+  if (!("Notification" in window)) return toast("Notifications indisponibles ici (iPhone : installe d’abord l’appli sur l’écran d’accueil).");
+  if (Notification.permission !== "granted") {
+    const r = await Notification.requestPermission(); if (r !== "granted") return toast("Notifications refusées.");
+    regPush(); renderSettings(); showInst(); return;
+  }
+  notif("TalcoExchange", "Les notifications fonctionnent ✅", "test");
+});
+navigator.serviceWorker?.addEventListener("message", e => { if (e.data && e.data.open && e.data.open !== "test" && me) openChat(e.data.open); });
 
 /* ---------- visibilité + PWA ---------- */
 document.addEventListener("visibilitychange", () => { flush(); if (document.visibilityState === "visible" && active && me) { markRead(active); renderChats(); } });
