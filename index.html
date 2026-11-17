@@ -825,7 +825,7 @@ function renderSettings() {
     <div class="sec">Profil</div>
     <div class="set-card"><div class="set-row" style="gap:8px"><input class="field" id="nameIn" value="${esc(me.name)}" maxlength="40" placeholder="Nom affiché" style="padding:10px 14px"><button class="btn sm" id="saveName">OK</button></div></div>
     <div class="sec">Notifications</div>
-    <div class="set-card"><div class="set-row"><span>${"Notification" in window && Notification.permission === "granted" ? "Notifications activées" : "Notifications désactivées"}</span><button class="get" data-notif>${"Notification" in window && Notification.permission === "granted" ? "Tester" : "Activer"}</button></div></div>
+    <div class="set-card"><div class="set-row"><span>${"Notification" in window && Notification.permission === "granted" ? "Notifications activées" : "Notifications désactivées"}</span><button class="get" data-notif>${"Notification" in window && Notification.permission === "granted" ? "Tester" : "Activer"}</button></div><div class="set-row"><span>Ça ne marche pas ?</span><button class="get" data-diag>Diagnostic</button></div></div>
     <div class="sec">Apparence</div>
     <div class="set-card"><div class="set-row" style="flex-direction:column;align-items:stretch;gap:8px"><div style="display:flex;justify-content:space-between"><span>Intensité Liquid Glass</span><b id="lgv">${Math.round(LG*100)}%</b></div><input type="range" id="lg" min="0" max="100" value="${Math.round(LG*100)}"><div class="chips"><button class="btn soft sm" data-lg="20">Discret</button><button class="btn soft sm" data-lg="70">Équilibré</button><button class="btn soft sm" data-lg="100">Max</button></div></div></div>
     <div class="set-card"><div class="set-row"><span>Style</span><div class="chips"><button class="btn soft sm" data-style="ios">iOS 27</button><button class="btn soft sm" data-style="mac">macOS</button></div></div></div>
@@ -1537,6 +1537,43 @@ function clearNotifs(uid) {
   navigator.serviceWorker.ready.then(r => r.getNotifications()).then(l => { l.filter(n => n.data && n.data.open === uid).forEach(n => n.close()); syncBadge(); }).catch(() => {});
 }
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") syncBadge(); });
+
+/* ---------- diagnostic des notifications ---------- */
+document.addEventListener("click", e => { if (e.target.closest("[data-diag]")) notifDiag(); });
+async function notifDiag() {
+  if (!me) return; const L = [], ok = (t, good, x = "") => L.push((good ? "✅ " : "❌ ") + t + (x ? " : " + x : ""));
+  const sh = sheet(`<h3>Diagnostic notifications</h3><p id="dgT" style="text-align:left;white-space:pre-line">Analyse…</p><button class="btn big" data-a="x">Fermer</button>`);
+  const out = () => { const el = sh.querySelector("#dgT"); if (el) el.textContent = L.join("\n"); };
+  try {
+    ok("Notifications supportées", "Notification" in window && "PushManager" in window && !!navigator.serviceWorker, ios && !stand ? "iPhone : installe d’abord l’appli sur l’écran d’accueil" : "");
+    ok("Autorisation", "Notification" in window && Notification.permission === "granted", "Notification" in window ? Notification.permission : "non supporté"); out();
+    const reg = await navigator.serviceWorker.getRegistration(); ok("Service worker actif", !!(reg && reg.active)); out();
+    let sub = reg && await reg.pushManager.getSubscription();
+    if (!sub && reg && Notification.permission === "granted") { try { sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: u8(PUSH_PUB) }); } catch (e) { ok("Création de l’abonnement", false, e.name + " " + e.message); } }
+    ok("Abonnement push", !!sub, sub ? new URL(sub.endpoint).host : ""); out();
+    if (sub) {
+      const id = btoa(sub.endpoint).replace(/[^A-Za-z0-9]/g, "").slice(-32);
+      try { await set(ref(db, `push/${me.uid}/${id}`), sub.endpoint); ok("Enregistré dans Firebase", true); } catch (e) { ok("Enregistré dans Firebase", false, (e.code || e.message) + " → republie database.rules.json"); }
+      out();
+    }
+    ok("Adresse du relais", !!RELAY_URL, RELAY_URL ? "" : "vide dans index.html");
+    if (RELAY_URL) {
+      try { const c = await (await fetch(RELAY_URL.replace(/\/$/, "") + "/?check")).json(), miss = Object.keys(c).filter(k => k !== "TURN" && !c[k]); ok("Relais Cloudflare", !miss.length, miss.length ? "variables manquantes : " + miss.join(", ") : "variables OK"); }
+      catch (e) { ok("Relais Cloudflare", false, "injoignable ou ancien code"); }
+      out();
+      if (sub) {
+        try {
+          navigator.serviceWorker.controller?.postMessage({ diag: true });
+          const tok = await auth.currentUser.getIdToken(), r = await fetch(RELAY_URL, { method: "POST", headers: { Authorization: "Bearer " + tok, "Content-Type": "application/json" }, body: JSON.stringify({ endpoints: [sub.endpoint] }) }), t = await r.text();
+          ok("Envoi test via le relais", r.ok, r.ok ? "service push : " + (JSON.parse(t).sent || []).join(",") + " (201 = accepté)" : r.status + " " + t);
+        } catch (e) { ok("Envoi test via le relais", false, e.message); }
+        out();
+      }
+    }
+    L.push("\nSi tout est ✅ : mets l’appli en arrière-plan, une notification « Test push » doit arriver dans quelques secondes.");
+  } catch (e) { L.push("❌ Erreur : " + e.message); }
+  out();
+}
 
 /* ---------- visibilité + PWA ---------- */
 document.addEventListener("visibilitychange", () => { flush(); if (document.visibilityState === "visible" && active && me) { markRead(active); renderChats(); } });

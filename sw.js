@@ -1,4 +1,4 @@
-const CACHE = "talcoexchange-v15";
+const CACHE = "talcoexchange-v16";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "favicon.ico", "favicon-32.png", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 
 self.addEventListener("install", e => {
@@ -57,15 +57,21 @@ async function latest() {
   const name = await (await fetch(`${DB}/users/${best.k}/name.json?auth=${tok}`)).json();
   return { from: best.k, title: name || "TalcoExchange", body: best.c.last || "Nouveau message", ts: best.c.ts };
 }
-const shown = new Set();
+const shown = new Set(); let force = 0;
+self.addEventListener("message", e => { if (e.data && e.data.diag) force = Date.now() + 60000; });
 self.addEventListener("push", e => {
   e.waitUntil((async () => {
+    const forced = Date.now() <= force;
     const wins = await self.clients.matchAll({ type: "window" });
-    if (wins.some(c => c.visibilityState === "visible")) return;
-    let n = null; try { n = await latest(); } catch (x) {}
-    n = n || { title: "TalcoExchange", body: "Nouveau message", from: "" };
-    const key = (n.from || "new") + ":" + (n.ts || "");
-    if (n.ts && shown.has(key)) return; shown.add(key);
+    if (!forced && wins.some(c => c.visibilityState === "visible")) return;
+    let n = null;
+    if (forced) { force = 0; n = { title: "Test push ✅", body: "Les notifications arrivent bien.", from: "test" }; }
+    else {
+      try { n = await latest(); } catch (x) {}
+      n = n || { title: "TalcoExchange", body: "Nouveau message", from: "" };
+      const key = (n.from || "new") + ":" + (n.ts || "");
+      if (n.ts && shown.has(key)) return; shown.add(key);
+    }
     await self.registration.showNotification(n.title, { body: n.body, icon: "icon-192.png", badge: "favicon-32.png", tag: "tx-" + (n.from || "new") + "-" + (n.ts || Date.now()), timestamp: n.ts || Date.now(), requireInteraction: !!n.call, vibrate: n.call ? [300, 150, 300, 150, 300] : undefined, data: { open: n.from } });
     try { const l = await self.registration.getNotifications(); if (self.navigator.setAppBadge) await self.navigator.setAppBadge(l.length); } catch (x) {}
   })());
