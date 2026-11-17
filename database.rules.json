@@ -115,6 +115,25 @@
           ".validate": "newData.isString() && newData.val().length <= 800"
         }
       }
+    },
+    "calls": {
+      "$cid": {
+        ".read": "auth != null && $cid.contains(auth.uid)",
+        ".write": "auth != null && $cid.contains(auth.uid)",
+        "offer": {
+          ".validate": "newData.hasChildren(['type', 'sdp']) && newData.child('sdp').val().length < 20000"
+        },
+        "answer": {
+          ".validate": "newData.hasChildren(['type', 'sdp']) && newData.child('sdp').val().length < 20000"
+        }
+      }
+    },
+    "incoming": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && (auth.uid === $uid || newData.child('from').val() === auth.uid || data.child('from').val() === auth.uid) && (!newData.exists() || auth.uid === $uid || root.child('friends').child(auth.uid).child($uid).exists())",
+        ".validate": "newData.hasChildren(['from', 'kind', 'cid', 'ts']) && newData.child('ts').val() === now"
+      }
     }
   }
 }
