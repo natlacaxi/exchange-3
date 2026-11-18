@@ -649,13 +649,13 @@ async function boot(u) {
     onValue(ref(db, "userChats/" + me.uid), s => { chats = s.val() || {}; saveLS("tx_ch_", chats); notifyNew(chats); renderChats(); if (active && chats[active]) markRead(active); },
       err => toast("Accès refusé : vérifiez les règles de la base."))
   );
-  regPush(); unsubs.push(onValue(ref(db, "incoming/" + me.uid), sn => onIncoming(sn.val()))); { let offT; unsubs.push(onValue(ref(db, ".info/connected"), sn => { clearTimeout(offT); if (sn.val()) $("#offBar").classList.add("hidden"); else offT = setTimeout(() => $("#offBar").classList.remove("hidden"), 3000); })); }
+  regPush(); unsubs.push(onValue(ref(db, "inbox/" + me.uid), sn => onInbox(sn.val()))); unsubs.push(onValue(ref(db, "incoming/" + me.uid), sn => onIncoming(sn.val()))); { let offT; unsubs.push(onValue(ref(db, ".info/connected"), sn => { clearTimeout(offT); if (sn.val()) $("#offBar").classList.add("hidden"); else offT = setTimeout(() => $("#offBar").classList.remove("hidden"), 3000); })); }
   unsubs.push(onValue(ref(db, "scheduled/" + me.uid), s => { sched = s.val() || {}; schedBar(); flush(); }, () => {}), (() => { const t = setInterval(flush, 4000); return () => clearInterval(t); })());
 }
 function teardown() {
   unsubs.forEach(f => { try { f(); } catch (e) {} }); unsubs = [];
   if (msgUnsub) { msgUnsub(); msgUnsub = null; }
-  if (call) endCall(false); hideInc(); msgToken++; M.clear(); sched = {}; seen = null; me = null; friends = {}; reqIn = {}; chats = {}; active = null; lastResults = [];
+  if (call) endCall(false); hideInc(); msgToken++; M.clear(); sched = {}; seen = null; inboxT = null; me = null; friends = {}; reqIn = {}; chats = {}; active = null; lastResults = [];
   $("#app").classList.remove("chat-open"); $("#chat").classList.add("hidden"); $("#noChat").classList.remove("hidden");
   ["#p-chats", "#p-friends", "#p-settings", "#results"].forEach(s => $(s).innerHTML = "");
   $("#q").value = "";
@@ -863,11 +863,11 @@ document.addEventListener("click", async e => {
       if (!confirm("Retirer cet ami ?")) return;
       await update(ref(db), { [`friends/${me.uid}/${d.unfriend}`]: null, [`friends/${d.unfriend}/${me.uid}`]: null }); return;
     }
-    if (d.add) { await set(ref(db, `requests/${d.add}/${me.uid}`), { ts: serverTimestamp(), id: me.id }); outgoing.add(d.add); toast("Demande envoyée"); renderResults(); return; }
+    if (d.add) { await set(ref(db, `requests/${d.add}/${me.uid}`), { ts: serverTimestamp(), id: me.id }); outgoing.add(d.add); inboxPost(d.add, "req", "t’a envoyé une demande d’ami"); toast("Demande envoyée"); renderResults(); return; }
     if (d.cancel) { await remove(ref(db, `requests/${d.cancel}/${me.uid}`)); outgoing.delete(d.cancel); renderResults(); return; }
     if (d.accept) {
       await update(ref(db), { [`friends/${me.uid}/${d.accept}`]: true, [`friends/${d.accept}/${me.uid}`]: true, [`requests/${me.uid}/${d.accept}`]: null });
-      toast("Ami ajouté 🎉"); return;
+      inboxPost(d.accept, "ok", "a accepté ta demande d’ami 🎉"); toast("Ami ajouté 🎉"); return;
     }
     if (d.decline) { await remove(ref(db, `requests/${me.uid}/${d.decline}`)); return; }
     if (d.open) { if (e.target.closest("[data-unfriend]")) return; await openChat(d.open); }
@@ -1289,7 +1289,9 @@ function renderRx(el, m) {
 async function react(k, x) {
   const m = M.get(k); if (!m || !me || !active) return;
   const path = ref(db, `chats/${chatId(me.uid, active)}/messages/${k}/reacts/${me.uid}`);
-  try { await (m.reacts && m.reacts[me.uid] === x ? remove(path) : set(path, x)); } catch (e) { toast("Réaction impossible."); }
+  try {
+    if (m.reacts && m.reacts[me.uid] === x) await remove(path); else { await set(path, x); if (m.from !== me.uid) inboxPost(m.from, "react", `a réagi ${x} à ton message`); }
+  } catch (e) { toast("Réaction impossible."); }
 }
 
 /* ---------- connexion : accroche qui change + léger relief ---------- */
@@ -1356,16 +1358,16 @@ async function ping(to) {
   } catch (x) { /* le message est parti, seule la notification manque */ }
 }
 let seen = null;
-function notif(title, body, tag) {
+function notif(title, body, tag, icon, ts) {
   if (!("Notification" in window) || Notification.permission !== "granted" || !navigator.serviceWorker) return;
-  navigator.serviceWorker.ready.then(r => r.showNotification(title, { body, icon: "icon-192.png", badge: "favicon-32.png", tag: "tx-" + tag + "-" + Date.now(), timestamp: Date.now(), data: { open: tag } }).then(syncBadge)).catch(() => {});
+  navigator.serviceWorker.ready.then(r => r.showNotification(title, { body, icon: icon || "icon-192.png", badge: "badge-96.png", tag: "tx-" + tag + "-" + (ts || Date.now()), timestamp: ts || Date.now(), data: { open: tag } }).then(syncBadge)).catch(() => {});
 }
 function notifyNew(c) {
   if (!seen) { seen = {}; for (const u in c) seen[u] = c[u].ts || 0; return; }
   for (const u in c) {
     const v = c[u], t = v.ts || 0;
     if (t > (seen[u] || 0) && v.from !== me.uid && !(document.visibilityState === "visible" && active === u)) {
-      getUser(u).then(pr => { const body = v.last || "Nouveau message", nm = pr.name || pr.id; if (document.visibilityState === "visible") toast(nm + " : " + body); else notif(nm, body, u); });
+      getUser(u).then(pr => { const body = v.last || "Nouveau message", nm = pr.name || pr.id; if (document.visibilityState === "visible") toast(nm + " : " + body); else notif(nm, body, u, pr.photo, t); });
     }
     seen[u] = Math.max(seen[u] || 0, t);
   }
@@ -1495,7 +1497,7 @@ async function onIncoming(v) {
   inc = v; const u = await getUser(v.from); if (inc !== v) return;
   $("#iAv").innerHTML = avatar(u, "lg"); $("#iNm").textContent = u.name; $("#iKd").textContent = v.kind === "video" ? "Appel vidéo entrant…" : "Appel vocal entrant…";
   $("#inc").classList.remove("hidden"); startRing();
-  if (document.visibilityState !== "visible") notif(u.name, v.kind === "video" ? "📹 Appel vidéo entrant" : "📞 Appel vocal entrant", v.from);
+  if (document.visibilityState !== "visible") notif(u.name, v.kind === "video" ? "📹 Appel vidéo entrant" : "📞 Appel vocal entrant", v.from, u.photo);
 }
 function endCall(notify, msg) {
   const c = call; if (!c) return; call = null;
@@ -1574,6 +1576,26 @@ async function notifDiag() {
   } catch (e) { L.push("❌ Erreur : " + e.message); }
   out();
 }
+
+/* ---------- toutes les notifications : demandes d'ami, réactions... ---------- */
+let inboxT = null;
+function inboxPost(to, type, text) {
+  if (!me) return;
+  push(ref(db, "inbox/" + to), { type, from: me.uid, text, ts: serverTimestamp() }).then(() => ping(to)).catch(() => {});
+}
+async function onInbox(v) {
+  const items = Object.entries(v || {}).map(([k, x]) => ({ k, ...x })).filter(x => typeof x.ts === "number");
+  if (inboxT === null) {
+    inboxT = items.reduce((m, x) => Math.max(m, x.ts), 0);
+    items.filter(x => Date.now() - x.ts > 3 * 864e5).forEach(x => remove(ref(db, `inbox/${me.uid}/${x.k}`)).catch(() => {}));
+    return;
+  }
+  for (const x of items.filter(i => i.ts > inboxT).sort((a, b) => a.ts - b.ts)) {
+    inboxT = Math.max(inboxT, x.ts); const u = await getUser(x.from), nm = u.name || u.id;
+    if (document.visibilityState === "visible") toast(nm + " " + x.text); else notif(nm, x.text, x.from, u.photo, x.ts);
+  }
+}
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") regPush(); });
 
 /* ---------- visibilité + PWA ---------- */
 document.addEventListener("visibilitychange", () => { flush(); if (document.visibilityState === "visible" && active && me) { markRead(active); renderChats(); } });

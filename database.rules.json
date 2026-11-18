@@ -134,6 +134,15 @@
         ".write": "auth != null && (auth.uid === $uid || newData.child('from').val() === auth.uid || data.child('from').val() === auth.uid) && (!newData.exists() || auth.uid === $uid || root.child('friends').child(auth.uid).child($uid).exists())",
         ".validate": "newData.hasChildren(['from', 'kind', 'cid', 'ts']) && newData.child('ts').val() === now"
       }
+    },
+    "inbox": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "$id": {
+          ".write": "auth != null && (auth.uid === $uid || (!data.exists() && newData.child('from').val() === auth.uid && (root.child('friends').child(auth.uid).child($uid).exists() || root.child('requests').child($uid).child(auth.uid).exists())))",
+          ".validate": "newData.hasChildren(['type', 'from', 'text', 'ts']) && newData.child('text').isString() && newData.child('text').val().length <= 140 && newData.child('ts').val() === now"
+        }
+      }
     }
   }
 }
