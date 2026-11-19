@@ -11,7 +11,7 @@
         ".write": "auth != null && auth.uid === $uid",
         ".validate": "newData.hasChildren(['id', 'idLower', 'name']) && (!data.exists() || newData.child('id').val() === data.child('id').val())",
         "id": {
-          ".validate": "newData.isString() && newData.val().matches(/^[a-z0-9_.]{3,20}$/)"
+          ".validate": "newData.isString() && newData.val().matches(/^[a-z0-9_.-]{3,20}$/)"
         },
         "idLower": {
           ".validate": "newData.isString() && newData.val() === newData.parent().child('id').val()"

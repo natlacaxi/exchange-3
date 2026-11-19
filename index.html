@@ -2,9 +2,22 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>TalcoExchange</title>
+<title>TalcoExchange – Messagerie du GroupeTalco | TalcoITN</title>
+<meta name="google-site-verification" content="TUBi6xTFf23UYii6oMmOaSj-DRsPRPsgWL4_IAmncho">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
-<meta name="description" content="TalcoExchange — le réseau social de messagerie du GroupeTalco.">
+<meta name="description" content="TalcoExchange (Talco Exchange, Echange Talco) : la messagerie instantanée du GroupeTalco. Messages, photos, vocaux, appels audio et vidéo. Compte TalcoITN / ITN 3.">
+<meta name="keywords" content="TalcoExchange, Talco Exchange, Echange Talco, Exchange Talco, Exchange GitHub, Talco GitHub, TalcoITN, Talco ITN, ITN 3, ITNB Talco, GroupeTalco, messagerie, chat, appel vidéo">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="author" content="GroupeTalco">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TalcoExchange">
+<meta property="og:title" content="TalcoExchange – Messagerie du GroupeTalco | TalcoITN">
+<meta property="og:description" content="TalcoExchange (Talco Exchange, Echange Talco) : la messagerie instantanée du GroupeTalco. Messages, photos, vocaux, appels audio et vidéo. Compte TalcoITN / ITN 3.">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TalcoExchange – Messagerie du GroupeTalco | TalcoITN">
+<meta name="twitter:description" content="TalcoExchange (Talco Exchange, Echange Talco) : la messagerie instantanée du GroupeTalco. Messages, photos, vocaux, appels audio et vidéo. Compte TalcoITN / ITN 3.">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "TalcoExchange", "alternateName": ["Talco Exchange", "Echange Talco", "Exchange Talco", "TalcoITN", "Talco ITN", "ITN 3", "ITNB Talco", "Exchange GitHub", "Talco GitHub"], "description": "TalcoExchange (Talco Exchange, Echange Talco) : la messagerie instantanée du GroupeTalco. Messages, photos, vocaux, appels audio et vidéo. Compte TalcoITN / ITN 3.", "applicationCategory": "CommunicationApplication", "operatingSystem": "Any", "inLanguage": "fr", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"}, "creator": {"@type": "Organization", "name": "GroupeTalco", "alternateName": ["TalcoInc", "TalcoAdministration"]}}</script>
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <meta name="color-scheme" content="light dark">
@@ -349,6 +362,7 @@ body{position:fixed;inset:0;width:100%}
 </style>
 </head>
 <body>
+<noscript><main style="font-family:sans-serif;max-width:560px;margin:40px auto;padding:0 20px;line-height:1.5"><h1>TalcoExchange</h1><p>TalcoExchange (Talco Exchange, Echange Talco) est la messagerie instantanée du GroupeTalco : messages, photos, messages vocaux, appels audio et vidéo, notifications. Compte TalcoITN / ITN 3.</p><p>Activez JavaScript pour vous connecter.</p></main></noscript>
 <div class="wall"></div>
 
 <!-- AUTH -->
@@ -472,12 +486,87 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
+/* ---------- Liaison TalcoITN (optionnelle) ----------
+   Exchange reste 100 % autonome (projet Firebase itn-3, connexion par identifiant + mot de passe).
+   Seulement quand il est ouvert DANS le portail TalcoITN-3 (iframe, même origine), il lit la session
+   du portail (projet itn-2) et ouvre automatiquement le compte Exchange lié. Accès direct : rien ne change. */
+const ITN2_CONFIG = {
+  apiKey: "AIzaSyABc0-3-D4kTgnH4-He_yEO8km45ah0BqY",
+  authDomain: "itn-2-fa6a9.firebaseapp.com",
+  databaseURL: "https://itn-2-fa6a9-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "itn-2-fa6a9",
+  appId: "1:599829214627:web:a82b6c70638db8ddda1616"
+};
+const inPortal = (() => { try { return window.top !== window.self && window.top.location.origin === location.origin; } catch (e) { return false; } })();
+const hexOf = buf => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+
+/* Session du portail (app itn-2 « p1 », la même que celle du portail) + identifiants Exchange dérivés. */
+async function portalUser() {
+  if (!inPortal) return null;
+  const A = await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js");
+  const AU = await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js");
+  const DB = await import("https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js");
+  const app2 = A.getApps().find(a => a.name === "p1") || A.initializeApp(ITN2_CONFIG, "p1");
+  const auth2 = AU.getAuth(app2), db2 = DB.getDatabase(app2);
+  const u2 = await new Promise(res => {
+    const off = AU.onAuthStateChanged(auth2, u => { off(); res(u); });
+    setTimeout(() => res(null), 5000);
+  });
+  if (!u2 || !u2.emailVerified) return null;
+  /* Secret propre à ce compte (users/<uid>/sso/exchange sur itn-2, lisible par lui seul). */
+  const kRef = DB.ref(db2, "users/" + u2.uid + "/sso/exchange");
+  let key = (await DB.get(kRef)).val();
+  if (!key) {
+    try { key = hexOf(crypto.getRandomValues(new Uint8Array(24))); await DB.set(kRef, key); }
+    catch (e) { key = (await DB.get(kRef)).val(); }
+  }
+  if (!key) return null;
+  const h = hexOf(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(u2.uid))).slice(0, 32);
+  return { u2, db2, DB, key, email: "x" + h + "@exchange.talco.invalid" };
+}
+
+/* Renvoie true si la liaison a pris en charge l'ouverture de session. */
+async function portalSync(u) {
+  const p = await portalUser();
+  if (!p) return false;                       // pas de session portail : comportement normal
+  if (u && u.email === p.email) return false; // bon compte déjà connecté : démarrage normal
+  registering = true;
+  try {
+    if (u) await signOut(auth);               // un autre compte était resté ouvert : on change
+    let cred;
+    try { cred = await signInWithEmailAndPassword(auth, p.email, p.key); }
+    catch (e) {
+      if (!/user-not-found|invalid-credential|invalid-login/.test(e?.code || "")) throw e;
+      cred = await createUserWithEmailAndPassword(auth, p.email, p.key);   // 1re fois
+    }
+    const pRef = ref(db, "users/" + cred.user.uid);
+    if (!(await get(pRef)).exists()) {
+      const pr = (await p.DB.get(p.DB.ref(p.db2, "users/" + p.u2.uid))).val() || {};
+      let id = String(pr.pseudo || "").toLowerCase();
+      if (!ID_RE.test(id)) id = "user_" + cred.user.uid.slice(0, 8).toLowerCase().replace(/[^a-z0-9]/g, "x");
+      const name = ((pr.prenom || "") + " " + (pr.nom || "")).trim().slice(0, 40) || id;
+      /* Identifiant déjà pris par un compte Exchange direct : on le distingue. */
+      const dup = await get(query(ref(db, "users"), orderByChild("idLower"), startAt(id), endAt(id), limitToFirst(2)));
+      if (dup.exists() && Object.keys(dup.val()).some(k => k !== cred.user.uid)) id = id.slice(0, 15) + "_" + Math.random().toString(36).slice(2, 6);
+      await set(pRef, { id, idLower: id, name, createdAt: serverTimestamp() });
+    }
+    registering = false;
+    await boot(cred.user);
+    return true;
+  } catch (e) {
+    registering = false;
+    try { await signOut(auth); } catch (x) {}
+    teardown(); $("#app").classList.add("hidden"); $("#auth").classList.remove("hidden");
+    return true;                              // repli : page de connexion habituelle
+  }
+}
+
 /* ---------- utils ---------- */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const EMAIL_DOMAIN = "@talcoexchange.app";
-const ID_RE = /^[a-z0-9_.]{3,20}$/;
+const ID_RE = /^[a-z0-9_.-]{3,20}$/;
 const COLORS = ["#ff6b6b", "#ff9f43", "#feca57", "#1dd1a1", "#10ac84", "#54a0ff", "#5f27cd", "#ee5a9e", "#00cec9", "#6c5ce7"];
 const colorOf = s => { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return COLORS[h % COLORS.length]; };
 const avatar = (u, cls = "") => `<div class="av ${cls}">${u.photo ? `<img src="${esc(u.photo)}" alt="">` : esc((u.name || u.id || "?")[0].toUpperCase())}</div>`;
@@ -599,7 +688,7 @@ $("#authForm").addEventListener("submit", async e => {
   e.preventDefault();
   const id = $("#fId").value.trim().toLowerCase().replace(/^@/, ""), pw = $("#fPw").value, err = $("#authErr"), btn = $("#authBtn");
   err.textContent = "";
-  if (!ID_RE.test(id)) return err.textContent = "Identifiant invalide (3-20 caractères : a-z, 0-9, _ ou .).";
+  if (!ID_RE.test(id)) return err.textContent = "Identifiant invalide (3-20 caractères : a-z, 0-9, _ . ou -).";
   if (pw.length < 6) return err.textContent = "Mot de passe : 6 caractères minimum.";
   if (mode === "reg" && !$("#fTerms").checked) return err.textContent = "Vous devez accepter les conditions pour créer un compte.";
   btn.disabled = true;
@@ -621,8 +710,10 @@ $("#authForm").addEventListener("submit", async e => {
 });
 
 /* ---------- cycle de vie ---------- */
+let ssoTried = false;
 onAuthStateChanged(auth, async u => {
   if (registering) return;
+  if (inPortal && !ssoTried) { ssoTried = true; if (await portalSync(u).catch(() => false)) return; }
   if (!u) { teardown(); $("#app").classList.add("hidden"); $("#auth").classList.remove("hidden"); return; }
   await boot(u);
 });

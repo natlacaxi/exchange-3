@@ -1,6 +1,17 @@
 TalcoExchange — GroupeTalco / TalcoAdministration / © TalcoInc2026
 
-1. Mets tous les fichiers (sauf database.rules.json) a la racine du repo GitHub Pages.
-2. Firebase > Authentication > Methode de connexion : active "E-mail/Mot de passe".
-3. Firebase > Authentication > Parametres > Domaines autorises : ajoute tonpseudo.github.io
-4. Firebase > Realtime Database > Regles : colle database.rules.json puis Publier.
+Autonome : fonctionne seul (projet Firebase itn-3, identifiant + mot de passe).
+Lié au portail TalcoITN-3 : quand il est ouvert DANS le portail, la connexion est automatique.
+
+1. Mets tous les fichiers (sauf database.rules.json) a la racine du depot GitHub Pages "exchange-3"
+   -> adresse attendue par le portail : https://natlacaxi.github.io/exchange-3/  (meme domaine = liaison possible)
+2. Firebase itn-3 > Authentication > Methode de connexion : active "E-mail/Mot de passe".
+3. Firebase itn-3 > Authentication > Parametres > Domaines autorises : natlacaxi.github.io
+4. Firebase itn-3 > Realtime Database > Regles : colle database.rules.json puis Publier
+   (identique a regles/itn-3_realtime.rules.json du portail ; accepte aussi "-" dans les identifiants).
+
+Liaison avec le portail (Firebase) :
+- Le portail (itn-2) garde la session et un secret par compte : users/<uid>/sso/exchange.
+- Exchange lit cette session, ouvre/cree le compte Exchange lie (itn-3) et cree le profil
+  (identifiant = pseudo du portail, nom = prenom + nom). Rien a coller : tout est deja dans index.html.
+- Acces direct a Exchange : rien ne change. Deconnexion dans Exchange : retour a sa page de connexion.
