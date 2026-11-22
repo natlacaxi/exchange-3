@@ -1,17 +1,22 @@
-TalcoExchange — GroupeTalco / TalcoAdministration / © TalcoInc2026
+TalcoExchange — PAGE DE CONNEXION (depot "exchange-3")
+GroupeTalco / TalcoAdministration / © TalcoInc2026
 
-Autonome : fonctionne seul (projet Firebase itn-3, identifiant + mot de passe).
-Lié au portail TalcoITN-3 : quand il est ouvert DANS le portail, la connexion est automatique.
+Adresse : https://natlacaxi.github.io/exchange-3/
+Role : connexion + creation de compte, puis affichage de l'interface Exchange (autre depot, adresse secrete) en iframe plein ecran.
+Pour l'utilisateur c'est un seul site : tant qu'il est connecte, la page de connexion n'apparait pas.
 
-1. Mets tous les fichiers (sauf database.rules.json) a la racine du depot GitHub Pages "exchange-3"
-   -> adresse attendue par le portail : https://natlacaxi.github.io/exchange-3/  (meme domaine = liaison possible)
-2. Firebase itn-3 > Authentication > Methode de connexion : active "E-mail/Mot de passe".
-3. Firebase itn-3 > Authentication > Parametres > Domaines autorises : natlacaxi.github.io
-4. Firebase itn-3 > Realtime Database > Regles : colle database.rules.json puis Publier
-   (identique a regles/itn-3_realtime.rules.json du portail ; accepte aussi "-" dans les identifiants).
+Fichiers : tout a la racine du depot (index.html, legal.html, favicons, manifest, sw.js...).
+L'adresse de l'interface est definie UNE SEULE FOIS, en haut du script de index.html : INTERFACE_URL.
 
-Liaison avec le portail (Firebase) :
-- Le portail (itn-2) garde la session et un secret par compte : users/<uid>/sso/exchange.
-- Exchange lit cette session, ouvre/cree le compte Exchange lie (itn-3) et cree le profil
-  (identifiant = pseudo du portail, nom = prenom + nom). Rien a coller : tout est deja dans index.html.
-- Acces direct a Exchange : rien ne change. Deconnexion dans Exchange : retour a sa page de connexion.
+Comment ca marche
+- Au chargement, l'interface s'ouvre (invisible) et dit si elle a deja une session. Oui : elle s'affiche directement. Non : la carte de connexion apparait.
+- Connexion : pseudo ou e-mail + mot de passe -> verification sur le serveur principal (itn-2, e-mail valide) -> creation/reparation du compte sur les autres serveurs
+  -> envoi de l'e-mail et du mot de passe a l'interface par message (postMessage, destinataire verifie) -> l'interface ouvre sa session et la garde.
+- Inscription : cree le compte sur itn-2 (code d'invitation verifie par les regles) PUIS sur tous les serveurs de la liste SERVERS (aujourd'hui : itn-3).
+  Pour ajouter itn-4, itn-5... : ajouter une entree dans SERVERS avec sa fonction "ensure".
+- Cette page ne garde rien (sessions en memoire seulement).
+
+A faire une fois
+1. Firebase itn-2 et itn-3 > Authentication : activer E-mail/Mot de passe ; Domaines autorises : natlacaxi.github.io (itn-2, itn-3)
+   ET talcoitn-k9x2mp7vl4wq6ty1hb5jn3rd8fk4sz.github.io (itn-3 : necessaire car l'interface s'y connecte).
+2. Publier les regles : regles/itn-2_realtime.rules.json (itn-2) et regles/itn-3_realtime.rules.json (itn-3) du zip talco-complet.
