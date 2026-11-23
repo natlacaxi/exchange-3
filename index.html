@@ -72,10 +72,21 @@ form{display:none;flex-direction:column;gap:12px}form.on{display:flex;animation:
 #msg.ok{display:block;background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}
 @keyframes sh{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 .foot{text-align:center;color:var(--mu);font-size:.76rem;margin-top:16px;line-height:1.7}.foot a{color:inherit}
+/* bannière du haut (réglée depuis TalcoAdministration) */
+#bn{position:fixed;top:0;left:0;right:0;z-index:9;padding:calc(7px + env(safe-area-inset-top,0px)) 14px 7px;text-align:center;font-weight:700;font-size:13px;background:#f59e0b24;border-bottom:1px solid #f59e0b59;color:#b45309;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+@media (prefers-color-scheme:dark){#bn{color:#fbbf24}}
+#bn.info{background:#3b82f624;border-color:#3b82f659;color:#2563eb}#bn.error{background:#ef444424;border-color:#ef444459;color:#dc2626}
+@media (prefers-color-scheme:dark){#bn.info{color:#93c5fd}#bn.error{color:#fca5a5}}
+#bn .mq{overflow:hidden;white-space:nowrap}#bn .mq span{display:inline-block;padding-left:100%;animation:mq 20s linear infinite}
+@keyframes mq{to{transform:translateX(-100%)}}
+body.hasbn .screen{padding-top:calc(54px + env(safe-area-inset-top,0px))}
+#susp .ico{font-size:2.6rem;text-align:center;margin-bottom:6px}
+#susp p.m{text-align:center;margin:.6em 0 1.2em;line-height:1.5}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
+<div id="bn" class="hidden" role="status"></div>
 <div class="bg"><i></i><i></i><i></i></div>
 
 <iframe id="frame" title="Service" allow="camera; microphone; clipboard-write; autoplay; fullscreen; web-share" referrerpolicy="origin"></iframe>
@@ -122,6 +133,17 @@ form{display:none;flex-direction:column;gap:12px}form.on{display:flex;animation:
   </div>
 </div>
 
+<div id="susp" class="screen hidden">
+  <div class="card">
+    <img class="logo" src="icon-192.png" alt="">
+    <div class="ico">🛠️</div>
+    <h1 id="suTitle">Service suspendu</h1>
+    <p class="m" id="suMsg"></p>
+    <button class="btn" type="button" id="suRetry">Réessayer</button>
+    <button class="lnk" type="button" id="suAdmin">Connexion administrateur</button>
+  </div>
+</div>
+
 <script type="module">
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getAuth, setPersistence, inMemoryPersistence, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signOut, deleteUser }
@@ -156,7 +178,7 @@ const app2 = getApps().find(a => a.name === "p1") || initializeApp(C2, "p1");
 const a2 = getAuth(app2), db2 = getDatabase(app2);
 
 /* ===== Affichage ===== */
-const show = w => { $("#splash").classList.toggle("hidden", w !== "splash"); $("#login").classList.toggle("hidden", w !== "login"); frame.classList.toggle("on", w === "app"); };
+const show = w => { $("#splash").classList.toggle("hidden", w !== "splash"); $("#login").classList.toggle("hidden", w !== "login"); $("#susp").classList.toggle("hidden", w !== "susp"); frame.classList.toggle("on", w === "app"); document.body.classList.toggle("hasbn", w !== "app" && !$("#bn").classList.contains("hidden")); };
 const msg = (t, ok) => { const m = $("#msg"); m.textContent = t || ""; m.className = t ? (ok ? "ok" : "bad") : ""; };
 const busy = (f, b) => { f.querySelectorAll("input,button").forEach(x => x.disabled = b); const bt = f.querySelector(".btn"); if (bt) bt.classList.toggle("load", b); };
 const authErr = e => ({
@@ -175,6 +197,33 @@ document.addEventListener("click", e => {
   const b = e.target.closest("[data-eye]"); if (!b) return;
   const i = document.getElementById(b.dataset.eye); i.type = i.type === "password" ? "text" : "password"; b.textContent = i.type === "password" ? "Afficher" : "Masquer";
 });
+
+/* ===== Bannière et suspension (lecture publique : itn-2 > status) ===== */
+let suspended = false, suspMsg = "", defMsg = "Ce service est temporairement suspendu. Réessayez plus tard.";
+function paintBanner(b) {
+  const el = $("#bn");
+  if (!b || !b.on || !b.text) { el.classList.add("hidden"); return; }
+  el.className = b.tone || ""; el.textContent = "";
+  if (b.scroll) { const w = document.createElement("div"); w.className = "mq"; const sp = document.createElement("span"); sp.textContent = b.text; w.appendChild(sp); el.appendChild(w); }
+  else el.textContent = b.text;
+}
+async function loadStatus() {
+  try {
+    const st = (await get(ref(db2, "status"))).val() || {};
+    paintBanner(st.banner);
+    if (st.defaultMessage) defMsg = st.defaultMessage;
+    const me = (st.services || {})[SVC.id] || {};
+    suspended = me.suspended === true; suspMsg = me.message || "";
+  } catch (e) {}
+}
+function showSusp(canAdmin) {
+  $("#suTitle").textContent = "Service suspendu";
+  $("#suMsg").textContent = suspMsg || defMsg;
+  $("#suAdmin").classList.toggle("hidden", !canAdmin);
+  show("susp");
+}
+$("#suRetry").onclick = () => location.reload();
+$("#suAdmin").onclick = () => show("login");
 
 /* ===== Comptes dérivés sur les serveurs des services (même principe pour les 19 services) ===== */
 async function credsFor(uid, id, sso) {
@@ -221,14 +270,17 @@ async function provisionService(id, svc, prof, creds) {
 }
 
 /* ===== Entrée dans le service (session valide) ===== */
-let IORIGIN = "", expected = "", sent = false, recovered = false, readyT, ctx = null;
+let IORIGIN = "", expected = "", sent = false, recovered = false, readyT, ctx = null, lastErr = "";
 const toFrame = m => frame.contentWindow && frame.contentWindow.postMessage(m, IORIGIN);
 
 async function enter(u) {
   show("splash");
   try {
-    const [pS, sS, ssoS] = await Promise.all([get(ref(db2, "users/" + u.uid)), get(ref(db2, "services/" + SVC.id)), get(ref(db2, "users/" + u.uid + "/sso"))]);
+    const pS = await get(ref(db2, "users/" + u.uid));
+    if (pS.exists() && suspended && !ADMINS.includes(pS.val().pseudo)) { showSusp(false); return; }
+    const [sS, ssoS] = await Promise.all([get(ref(db2, "services/" + SVC.id)), get(ref(db2, "users/" + u.uid + "/sso"))]);
     if (!pS.exists()) { await signOut(a2); show("login"); return msg("Compte incomplet. Recréez votre compte avec un code d’invitation valide."); }
+    if (suspended && !ADMINS.includes(pS.val().pseudo)) { showSusp(false); return; }
     const svc = sS.val(), sso = ssoS.val() || {};
     if (!svc || !svc.url) { show("login"); return msg("Ce service n’est pas disponible pour le moment."); }
     const creds = await credsFor(u.uid, SVC.id, sso);
@@ -242,31 +294,32 @@ async function enter(u) {
 }
 async function provisionOthers(u, prof, sso) {
   try {
-    const all = (await get(ref(db2, "services"))).val() || {};
-    for (const [id, s] of Object.entries(all)) {
+    const ids = Object.keys((await get(ref(db2, "status/services"))).val() || {});
+    for (const id of ids) {
       if (id === SVC.id || sso[id]) continue;
-      try { const c = await credsFor(u.uid, id, sso); await provisionService(id, s, prof, c); } catch (x) {}
+      try { const s = (await get(ref(db2, "services/" + id))).val(); if (!s) continue; const c = await credsFor(u.uid, id, sso); await provisionService(id, s, prof, c); } catch (x) {}
     }
   } catch (e) {}
 }
 async function recover() {                      // une seule tentative de réparation du compte du service
-  if (recovered || !ctx) { if (!frame.classList.contains("on")) { show("login"); msg("Le service ne répond pas. Réessayez."); } return; }
+  if (recovered || !ctx) { if (!frame.classList.contains("on")) { show("login"); msg("Le service ne répond pas. Réessayez." + (lastErr ? " (" + lastErr + ")" : "")); } return; }
   recovered = true;
   try { await provisionService(SVC.id, ctx.svc, ctx.prof, ctx.creds); sent = true; toFrame({ type: "talco-login", email: ctx.creds.email, password: ctx.creds.key }); readyT = setTimeout(recover, 12000); }
-  catch (e) { show("login"); msg("Le service ne répond pas. Réessayez."); }
+  catch (e) { show("login"); msg("Le service ne répond pas. Réessayez." + (lastErr ? " (" + lastErr + ")" : "")); }
 }
 addEventListener("message", async e => {
   if (!IORIGIN || e.origin !== IORIGIN || e.source !== frame.contentWindow) return;
   const m = e.data || {};
   if (m.type === "talco-hello") {
     if (ctx && m.email !== expected && !sent) { sent = true; toFrame({ type: "talco-login", email: ctx.creds.email, password: ctx.creds.key }); }
-  } else if (m.type === "talco-ready") { clearTimeout(readyT); show("app"); if (dip) toFrame({ type: "talco-install-ready" }); }
+  } else if (m.type === "talco-error") { lastErr = String(m.message || "").slice(0, 160); }
+  else if (m.type === "talco-ready") { clearTimeout(readyT); show("app"); if (dip) toFrame({ type: "talco-install-ready" }); }
   else if (m.type === "talco-login-error") { clearTimeout(readyT); recover(); }
   else if (m.type === "talco-install" && dip) { dip.prompt(); dip.userChoice.catch(() => {}).finally(() => { dip = null; }); }
   else if (m.type === "talco-logout") {      // déconnexion = déconnexion de la session enregistrée
     clearTimeout(readyT); expected = ""; ctx = null; frame.src = "about:blank";
     try { await signOut(a2); } catch (x) {}
-    show("login"); msg("");
+    suspended ? showSusp(true) : show("login"); msg("");
   }
 });
 let dip = null;
@@ -348,8 +401,9 @@ $("#fup").onsubmit = async e => {
 };
 
 /* ===== Démarrage : session enregistrée ? alors direct dans le service ===== */
+await loadStatus();
 const u0 = await new Promise(res => { const off = onAuthStateChanged(a2, u => { off(); res(u); }); setTimeout(() => res(null), 6000); });
-if (u0 && u0.emailVerified) enter(u0); else show("login");
+if (u0 && u0.emailVerified) enter(u0); else if (suspended) showSusp(true); else show("login");
 </script>
 <noscript><p style="padding:20px;font-family:sans-serif">JavaScript est nécessaire.</p></noscript>
 </body>
