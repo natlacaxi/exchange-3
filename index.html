@@ -3,80 +3,117 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>TalcoExchange | Talco-IT-Networks</title>
-<meta name="description" content="Le réseau social de messagerie du GroupeTalco.">
-<meta name="theme-color" content="#ffffff">
+<title>Talco-IT-Networks</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0b1020">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
-:root{color-scheme:light dark;--bg:#f4f6fb;--card:#ffffffd9;--tx:#0f172a;--mu:#64748b;--bd:#e2e8f0;--ac:#2563eb;--rd:#dc2626;--ok:#16a34a;--in:#fff}
-@media (prefers-color-scheme:dark){:root{--bg:#0b1220;--card:#131c2ed9;--tx:#e2e8f0;--mu:#94a3b8;--bd:#24304a;--ac:#60a5fa;--rd:#f87171;--ok:#4ade80;--in:#0f1727}}
-*{box-sizing:border-box}
+:root{--ac:#2f6bff;--tx:#0f172a;--mu:#64748b;--bd:#ffffff66;--gl:#ffffffb8;--in:#ffffffcc;--bg:#e9eefb;--rd:#e11d48;--ok:#059669}
+@media (prefers-color-scheme:dark){:root{--tx:#eef2ff;--mu:#9aa6c4;--bd:#ffffff1f;--gl:#10172bb8;--in:#0b1226cc;--bg:#070b18;--rd:#fb7185;--ok:#34d399}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
 #frame{position:fixed;inset:0;width:100%;height:100%;border:0;background:var(--bg);visibility:hidden}
 #frame.on{visibility:visible}
-.screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow-y:auto;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
-  background:radial-gradient(60% 50% at 15% 10%,#60a5fa44,transparent),radial-gradient(50% 45% at 90% 90%,#a78bfa44,transparent),var(--bg)}
 .hidden{display:none!important}
-#splash img{width:84px;height:84px;border-radius:22px;animation:p 1.4s ease-in-out infinite}
-@keyframes p{50%{transform:scale(.92);opacity:.7}}
-.card{width:100%;max-width:420px;margin:auto;background:var(--card);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--bd);border-radius:24px;padding:22px 20px;box-shadow:0 20px 50px #0002}
-.card .logo{display:block;width:64px;height:64px;border-radius:16px;margin:0 auto 8px}
-h1{font-size:1.45rem;text-align:center;margin:.1em 0}
-.sub{text-align:center;color:var(--mu);margin:0 0 14px}
-.tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--bd);border-radius:12px;padding:4px;margin-bottom:14px}
-.tabs button{border:0;background:transparent;color:var(--tx);border-radius:9px;padding:10px;font:inherit;min-height:44px;cursor:pointer}
-.tabs button.on{background:var(--in);font-weight:600;box-shadow:0 1px 4px #0002}
-form{display:none;gap:10px;flex-direction:column}form.on{display:flex}
-label{display:flex;flex-direction:column;gap:4px;font-size:.85rem;color:var(--mu)}
-input{font:inherit;font-size:16px;color:var(--tx);background:var(--in);border:1px solid var(--bd);border-radius:12px;padding:12px;min-height:46px;width:100%}
-input:focus{outline:2px solid var(--ac);outline-offset:0}
-.chk{flex-direction:row;align-items:flex-start;gap:8px;color:var(--tx);font-size:.85rem}.chk input{width:20px;min-height:20px;margin-top:2px}
-.btn{font:inherit;font-weight:600;border:0;border-radius:12px;padding:13px;min-height:48px;background:var(--ac);color:#fff;cursor:pointer}
-.btn:disabled{opacity:.5}
-.lnk{background:none;border:0;color:var(--ac);font:inherit;padding:6px;cursor:pointer;min-height:36px}
-#msg{display:none;border-radius:10px;padding:10px 12px;font-size:.9rem;margin-bottom:10px}
-#msg.bad{display:block;background:#dc262615;color:var(--rd)}#msg.ok{display:block;background:#16a34a15;color:var(--ok)}
-.foot{text-align:center;color:var(--mu);font-size:.78rem;margin-top:12px}.foot a{color:inherit}
+
+/* fond animé */
+.bg{position:fixed;inset:0;overflow:hidden;background:var(--bg)}
+.bg i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.55;animation:fl 18s ease-in-out infinite alternate}
+.bg i:nth-child(1){width:55vmax;height:55vmax;left:-18vmax;top:-20vmax;background:var(--ac)}
+.bg i:nth-child(2){width:48vmax;height:48vmax;right:-16vmax;bottom:-18vmax;background:#a855f7;animation-delay:-6s}
+.bg i:nth-child(3){width:34vmax;height:34vmax;left:35%;top:45%;background:#22d3ee;opacity:.32;animation-delay:-11s}
+@keyframes fl{to{transform:translate3d(6vmax,4vmax,0) scale(1.12)}}
+
+.screen{position:fixed;inset:0;display:flex;overflow-y:auto;padding:max(18px,env(safe-area-inset-top,0px)) max(18px,env(safe-area-inset-right,0px)) max(18px,env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px))}
+#splash{align-items:center;justify-content:center;flex-direction:column;gap:18px}
+#splash img{width:92px;height:92px;border-radius:24px;box-shadow:0 12px 40px #0004;animation:pu 1.6s ease-in-out infinite}
+.dots{display:flex;gap:7px}.dots b{width:8px;height:8px;border-radius:50%;background:var(--ac);animation:dt 1s ease-in-out infinite}.dots b:nth-child(2){animation-delay:.15s}.dots b:nth-child(3){animation-delay:.3s}
+@keyframes pu{50%{transform:scale(.94)}}@keyframes dt{50%{transform:translateY(-6px);opacity:.4}}
+
+.card{width:100%;max-width:440px;margin:auto;background:var(--gl);backdrop-filter:blur(26px) saturate(1.4);-webkit-backdrop-filter:blur(26px) saturate(1.4);border:1px solid var(--bd);border-radius:30px;padding:28px 22px 22px;box-shadow:0 30px 80px #0003;animation:up .5s cubic-bezier(.2,.8,.2,1)}
+@keyframes up{from{opacity:0;transform:translateY(18px) scale(.98)}}
+.logo{display:block;width:76px;height:76px;border-radius:21px;margin:0 auto 12px;box-shadow:0 10px 30px color-mix(in srgb,var(--ac) 45%,transparent)}
+h1{font-size:1.55rem;text-align:center;margin:.1em 0 .1em;letter-spacing:-.02em}
+.tag{text-align:center;color:var(--mu);margin:0 0 20px;font-size:.95rem}
+
+.tabs{position:relative;display:grid;grid-template-columns:1fr 1fr;background:var(--in);border-radius:15px;padding:4px;margin-bottom:18px}
+.tabs::before{content:"";position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:12px;background:var(--ac);transition:transform .3s cubic-bezier(.3,.9,.3,1)}
+.tabs.up::before{transform:translateX(100%)}
+.tabs button{position:relative;border:0;background:none;color:var(--tx);font:inherit;font-weight:600;padding:11px;min-height:46px;cursor:pointer;transition:color .25s}
+.tabs button.on{color:#fff}
+
+form{display:none;flex-direction:column;gap:12px}form.on{display:flex;animation:up .35s ease}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:380px){.row{grid-template-columns:1fr}}
+.f{position:relative}
+.f input{width:100%;font:inherit;font-size:16px;color:var(--tx);background:var(--in);border:1.5px solid transparent;border-radius:15px;padding:22px 14px 8px;min-height:56px;transition:border-color .2s,box-shadow .2s}
+.f input:focus{outline:0;border-color:var(--ac);box-shadow:0 0 0 4px color-mix(in srgb,var(--ac) 22%,transparent)}
+.f label{position:absolute;left:15px;top:17px;color:var(--mu);pointer-events:none;transition:all .18s ease;transform-origin:left}
+.f input:focus+label,.f input:not(:placeholder-shown)+label{top:7px;font-size:.72rem;color:var(--ac);font-weight:600}
+.f .eye{position:absolute;right:6px;top:7px;border:0;background:none;color:var(--mu);font:inherit;font-size:.8rem;padding:10px;min-height:42px;cursor:pointer}
+.f.pw input{padding-right:84px}
+
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:.85rem;color:var(--mu)}
+.chk input{width:22px;height:22px;margin:1px 0 0;accent-color:var(--ac);flex:none}
+.chk a{color:var(--ac)}
+
+.btn{position:relative;font:inherit;font-weight:700;border:0;border-radius:16px;padding:15px;min-height:54px;color:#fff;cursor:pointer;background:linear-gradient(135deg,var(--ac),color-mix(in srgb,var(--ac) 55%,#a855f7));box-shadow:0 10px 26px color-mix(in srgb,var(--ac) 40%,transparent);transition:transform .15s,opacity .2s}
+.btn:active{transform:scale(.98)}.btn:disabled{opacity:.6}
+.btn.load{color:transparent}.btn.load::after{content:"";position:absolute;inset:0;margin:auto;width:22px;height:22px;border:3px solid #fff8;border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.lnk{background:none;border:0;color:var(--ac);font:inherit;font-weight:600;padding:8px;min-height:40px;cursor:pointer}
+
+#msg{display:none;border-radius:14px;padding:11px 14px;font-size:.9rem;margin-bottom:14px}
+#msg.bad{display:block;background:color-mix(in srgb,var(--rd) 14%,transparent);color:var(--rd);animation:sh .4s}
+#msg.ok{display:block;background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}
+@keyframes sh{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.foot{text-align:center;color:var(--mu);font-size:.76rem;margin-top:16px;line-height:1.7}.foot a{color:inherit}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
+<div class="bg"><i></i><i></i><i></i></div>
 
-<iframe id="frame" title="TalcoExchange" allow="camera; microphone; clipboard-write; autoplay; fullscreen; web-share" referrerpolicy="origin"></iframe>
+<iframe id="frame" title="Service" allow="camera; microphone; clipboard-write; autoplay; fullscreen; web-share" referrerpolicy="origin"></iframe>
 
-<div id="splash" class="screen"><img src="icon-192.png" alt="TalcoExchange"></div>
+<div id="splash" class="screen"><img id="sLogo" src="icon-192.png" alt=""><div class="dots"><b></b><b></b><b></b></div></div>
 
 <div id="login" class="screen hidden">
   <div class="card">
     <img class="logo" src="icon-192.png" alt="">
-    <h1>TalcoExchange</h1>
-    <p class="sub">Discutez en temps réel avec vos amis.</p>
-    <div class="tabs">
+    <h1 id="sName">Talco-IT-Networks</h1>
+    <p class="tag" id="sTag">Connectez-vous pour continuer.</p>
+    <div class="tabs" id="tabs">
       <button type="button" class="on" data-t="in">Connexion</button>
       <button type="button" data-t="up">Créer un compte</button>
     </div>
     <div id="msg" role="status"></div>
 
     <form id="fin" class="on" autocomplete="on">
-      <label>Pseudo ou e-mail<input id="lid" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required></label>
-      <label>Mot de passe<input id="lpw" type="password" autocomplete="current-password" required></label>
+      <div class="f"><input id="lid" placeholder=" " autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required><label for="lid">Pseudo ou e-mail</label></div>
+      <div class="f pw"><input id="lpw" type="password" placeholder=" " autocomplete="current-password" required><label for="lpw">Mot de passe</label><button type="button" class="eye" data-eye="lpw">Afficher</button></div>
       <button class="btn" type="submit">Se connecter</button>
       <button class="lnk" type="button" id="forgot">Mot de passe oublié ?</button>
       <button class="lnk hidden" type="button" id="resend">Renvoyer le mail de validation</button>
     </form>
 
     <form id="fup" autocomplete="on">
-      <label>Code d’invitation<input id="sinv" inputmode="numeric" autocomplete="off" required></label>
-      <label>Prénom<input id="spre" autocomplete="given-name" required></label>
-      <label>Nom<input id="snom" autocomplete="family-name" required></label>
-      <label>Pseudo<input id="sps" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="20" required></label>
-      <label>Téléphone<input id="stel" type="tel" autocomplete="tel" required></label>
-      <label>E-mail<input id="smail" type="email" autocomplete="email" required></label>
-      <label>Mot de passe (8 caractères minimum)<input id="sp1" type="password" autocomplete="new-password" required></label>
-      <label>Confirmer le mot de passe<input id="sp2" type="password" autocomplete="new-password" required></label>
+      <div class="f"><input id="sinv" inputmode="numeric" placeholder=" " autocomplete="off" required><label for="sinv">Code d’invitation</label></div>
+      <div class="row">
+        <div class="f"><input id="spre" placeholder=" " autocomplete="given-name" required><label for="spre">Prénom</label></div>
+        <div class="f"><input id="snom" placeholder=" " autocomplete="family-name" required><label for="snom">Nom</label></div>
+      </div>
+      <div class="f"><input id="sps" placeholder=" " autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="20" required><label for="sps">Pseudo</label></div>
+      <div class="row">
+        <div class="f"><input id="stel" type="tel" placeholder=" " autocomplete="tel" required><label for="stel">Téléphone</label></div>
+        <div class="f"><input id="smail" type="email" placeholder=" " autocomplete="email" required><label for="smail">E-mail</label></div>
+      </div>
+      <div class="f pw"><input id="sp1" type="password" placeholder=" " autocomplete="new-password" required><label for="sp1">Mot de passe (8 caractères min.)</label><button type="button" class="eye" data-eye="sp1">Afficher</button></div>
+      <div class="f pw"><input id="sp2" type="password" placeholder=" " autocomplete="new-password" required><label for="sp2">Confirmer le mot de passe</label><button type="button" class="eye" data-eye="sp2">Afficher</button></div>
       <label class="chk"><input type="checkbox" id="sterms"><span>J’ai lu et j’accepte les <a href="legal.html#cgu" target="_blank" rel="noopener">conditions d’utilisation</a> et la <a href="legal.html#priv" target="_blank" rel="noopener">politique de confidentialité</a>.</span></label>
       <button class="btn" type="submit">Créer mon compte</button>
     </form>
@@ -86,92 +123,155 @@ input:focus{outline:2px solid var(--ac);outline-offset:0}
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getAuth, setPersistence, inMemoryPersistence, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signOut, deleteUser }
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, setPersistence, inMemoryPersistence, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signOut, deleteUser }
   from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import { getDatabase, ref, get, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+import { getDatabase, ref, get, set, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
 
-/* ===== Réglages ===== */
-/* Adresse (secrète) de l’interface Exchange : hébergée sur un autre compte GitHub Pages. */
-const INTERFACE_URL = "https://talcoitn-k9x2mp7vl4wq6ty1hb5jn3rd8fk4sz.github.io/exchange-3-a8f4k92m7p1x5v3n6q8w2z9c4b7j0h5r2t8y6u3i1o9l4s7d0g2e5a8c1v4b7n9m2q5w8e3r6t9y1u4i7o0p2a5s8/";
-const IORIGIN = new URL(INTERFACE_URL).origin;
-
-/* Serveur principal : comptes du portail (itn-2). */
+/* ============================================================================
+   LOGIN COMMUN À TOUS LES SERVICES TALCO
+   Ce fichier est identique dans chaque service. Seul service.json change (id, nom, couleur)
+   avec le manifest et les icônes. L’adresse du site réel (secrète) n’est PAS ici :
+   elle est lue dans Firebase (itn-2 > services/<id>) uniquement après connexion validée.
+   ============================================================================ */
 const C2 = {
   apiKey: "AIzaSyABc0-3-D4kTgnH4-He_yEO8km45ah0BqY", authDomain: "itn-2-fa6a9.firebaseapp.com",
   databaseURL: "https://itn-2-fa6a9-default-rtdb.europe-west1.firebasedatabase.app", projectId: "itn-2-fa6a9",
   appId: "1:599829214627:web:a82b6c70638db8ddda1616"
 };
-/* Serveur Exchange (itn-3). */
-const C3 = {
-  apiKey: "AIzaSyALu9n3ksX-0mN4u8reRBpFkWAUsVsGswA", authDomain: "itn-3-1b09f.firebaseapp.com",
-  databaseURL: "https://itn-3-1b09f-default-rtdb.europe-west1.firebasedatabase.app", projectId: "itn-3-1b09f",
-  appId: "1:105336373207:web:238065cbea49453d4d1592"
-};
-
+const ADMINS = ["anton", "talco"];
 const $ = s => document.querySelector(s);
 const PSEUDO = /^[a-z0-9_-]{3,20}$/, TEL = /^\+?[0-9 .-]{6,20}$/, MAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const frame = $("#frame");
+const hexOf = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join("");
 
-/* Sessions de cette page : en mémoire seulement (rien n’est gardé ici, l’interface garde la sienne). */
-const app2 = initializeApp(C2, "l2"), a2 = getAuth(app2), db2 = getDatabase(app2);
-const app3 = initializeApp(C3, "l3"), a3 = getAuth(app3), db3 = getDatabase(app3);
-await Promise.all([setPersistence(a2, inMemoryPersistence), setPersistence(a3, inMemoryPersistence)]);
+let SVC = { id: "exchange", name: "Talco", tag: "", color: "#2f6bff" };
+try { SVC = { ...SVC, ...(await (await fetch("service.json", { cache: "no-store" })).json()) }; } catch (e) {}
+document.title = SVC.name + " | Talco-IT-Networks";
+$("#sName").textContent = SVC.name; if (SVC.tag) $("#sTag").textContent = SVC.tag;
+document.documentElement.style.setProperty("--ac", SVC.color);
 
-/* ===== Serveurs : à chaque nouveau compte, il est créé sur tous les serveurs de cette liste.
-   Pour en ajouter un (itn-4, itn-5…), ajouter une entrée { name, ensure } avec sa propre fonction. ===== */
-async function ensureExchange(email, pw, prof) {
-  let cred;
-  try { cred = await signInWithEmailAndPassword(a3, email, pw); }
-  catch (e) {
-    if (!/user-not-found|invalid-credential|invalid-login/.test(e?.code || "")) throw e;
-    try { cred = await createUserWithEmailAndPassword(a3, email, pw); }
-    catch (e2) { if (/email-already-in-use/.test(e2?.code || "")) throw { code: "x/desync" }; throw e2; }
-  }
-  const uid = cred.user.uid;
-  if (!(await get(ref(db3, "users/" + uid))).exists()) {
-    const id = prof.pseudo, name = (((prof.prenom || "") + " " + (prof.nom || "")).trim() || id).slice(0, 40);
-    await update(ref(db3), { ["users/" + uid]: { id, idLower: id, name, createdAt: serverTimestamp(), terms: 1 }, ["idIndex/" + id]: uid });
-  }
-  await signOut(a3);
-}
-const SERVERS = [{ name: "itn-3 (Exchange)", ensure: ensureExchange, auth: a3 }];
-const provision = async (email, pw, prof) => { for (const s of SERVERS) await s.ensure(email, pw, prof); };
+/* Serveur principal itn-2 : session ENREGISTRÉE (même session que le portail ITN, même domaine). */
+const app2 = getApps().find(a => a.name === "p1") || initializeApp(C2, "p1");
+const a2 = getAuth(app2), db2 = getDatabase(app2);
 
 /* ===== Affichage ===== */
-let ready = false, slowT;
-const showApp = () => { ready = true; clearTimeout(slowT); frame.classList.add("on"); $("#splash").classList.add("hidden"); $("#login").classList.add("hidden"); };
-const showCard = () => { ready = false; frame.classList.remove("on"); $("#splash").classList.add("hidden"); $("#login").classList.remove("hidden"); };
+const show = w => { $("#splash").classList.toggle("hidden", w !== "splash"); $("#login").classList.toggle("hidden", w !== "login"); frame.classList.toggle("on", w === "app"); };
 const msg = (t, ok) => { const m = $("#msg"); m.textContent = t || ""; m.className = t ? (ok ? "ok" : "bad") : ""; };
-const busy = (f, b) => f.querySelectorAll("button,input").forEach(x => x.disabled = b);
+const busy = (f, b) => { f.querySelectorAll("input,button").forEach(x => x.disabled = b); const bt = f.querySelector(".btn"); if (bt) bt.classList.toggle("load", b); };
 const authErr = e => ({
   "auth/invalid-credential": "Identifiants incorrects.", "auth/wrong-password": "Identifiants incorrects.", "auth/user-not-found": "Identifiants incorrects.",
   "auth/invalid-email": "Adresse e-mail invalide.", "auth/email-already-in-use": "Cette adresse e-mail est déjà utilisée.", "auth/weak-password": "Mot de passe trop faible.",
-  "auth/too-many-requests": "Trop de tentatives. Réessayez dans quelques minutes.", "auth/network-request-failed": "Problème de réseau. Vérifiez votre connexion.",
-  "x/desync": "Le mot de passe Exchange n’est plus synchronisé avec celui du compte. Utilisez « Mot de passe oublié ? »."
-})[e && e.code] || (/PERMISSION_DENIED/i.test(e?.message || "") ? "Accès refusé par le serveur (identifiant déjà pris ?)." : "Une erreur est survenue. Réessayez.");
-
-document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
-  document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x === b));
+  "auth/too-many-requests": "Trop de tentatives. Réessayez dans quelques minutes.", "auth/network-request-failed": "Problème de réseau. Vérifiez votre connexion."
+})[e && e.code] || (e && e.userMessage) || "Une erreur est survenue. Réessayez.";
+$("#tabs").addEventListener("click", e => {
+  const b = e.target.closest("button[data-t]"); if (!b) return;
+  document.querySelectorAll("#tabs button").forEach(x => x.classList.toggle("on", x === b));
+  $("#tabs").classList.toggle("up", b.dataset.t === "up");
   $("#fin").classList.toggle("on", b.dataset.t === "in"); $("#fup").classList.toggle("on", b.dataset.t === "up");
   msg(""); $("#resend").classList.add("hidden");
 });
-
-/* ===== Liaison avec l’interface (autre domaine : uniquement par messages) ===== */
-frame.src = INTERFACE_URL;
-slowT = setTimeout(() => { if (!ready) showCard(); }, 12000);
-const toFrame = m => frame.contentWindow.postMessage(m, IORIGIN);
-let dip = null, waitT;
-addEventListener("message", e => {
-  if (e.origin !== IORIGIN || e.source !== frame.contentWindow) return;
-  const m = e.data || {};
-  if (m.type === "exchange-ready") { clearTimeout(waitT); showApp(); if (dip) toFrame({ type: "exchange-install-ready" }); }
-  else if (m.type === "exchange-need-login") { clearTimeout(slowT); clearTimeout(waitT); showCard(); }
-  else if (m.type === "exchange-login-error") { clearTimeout(waitT); showCard(); msg(m.message || "Connexion impossible."); }
-  else if (m.type === "exchange-install" && dip) { dip.prompt(); dip.userChoice.catch(() => {}).finally(() => { dip = null; }); }
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-eye]"); if (!b) return;
+  const i = document.getElementById(b.dataset.eye); i.type = i.type === "password" ? "text" : "password"; b.textContent = i.type === "password" ? "Afficher" : "Masquer";
 });
-addEventListener("beforeinstallprompt", e => { e.preventDefault(); dip = e; if (ready) toFrame({ type: "exchange-install-ready" }); });
-addEventListener("appinstalled", () => { dip = null; if (frame.contentWindow) toFrame({ type: "exchange-installed" }); });
+
+/* ===== Comptes dérivés sur les serveurs des services (même principe pour les 19 services) ===== */
+async function credsFor(uid, id, sso) {
+  const kRef = ref(db2, "users/" + uid + "/sso/" + id);
+  let key = sso && sso[id];
+  if (!key) {
+    try { key = hexOf(crypto.getRandomValues(new Uint8Array(24))); await set(kRef, key); }
+    catch (e) { key = (await get(kRef)).val(); }
+  }
+  if (!key) throw { userMessage: "Impossible de préparer l’accès au service." };
+  const h = hexOf(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(uid))).slice(0, 32);
+  return { email: "x" + h + "@" + id + ".talco.invalid", key };
+}
+
+/* Profils à créer sur le serveur d’un service (un par type de service). */
+const PROFILES = {
+  async exchange({ db, uid, prof }) {
+    if ((await get(ref(db, "users/" + uid))).exists()) return;
+    const id = prof.pseudo, name = (((prof.prenom || "") + " " + (prof.nom || "")).trim() || id).slice(0, 40);
+    const up = { ["users/" + uid]: { id, idLower: id, name, createdAt: serverTimestamp(), terms: 1 }, ["idIndex/" + id]: uid };
+    if (ADMINS.includes(id)) { const k = (await get(ref(db2, "config/adminKeys/exchange"))).val(); if (k) up["admins/" + uid] = k; }
+    await update(ref(db), up);
+  },
+  async cloud({ db, uid, prof }) {
+    if (!(await get(ref(db, "profiles/" + uid))).exists()) await update(ref(db), { ["profiles/" + uid]: { name: String(prof.pseudo).slice(0, 40) } });
+    if (ADMINS.includes(prof.pseudo)) {
+      const k = (await get(ref(db2, "config/adminKeys/cloud"))).val();
+      if (k) { try { await set(ref(db, "admins/" + uid), k); } catch (e) {} }
+    }
+  }
+};
+async function provisionService(id, svc, prof, creds) {
+  const app = getApps().find(a => a.name === "s_" + id) || initializeApp(svc.firebase, "s_" + id);
+  const a = getAuth(app); await setPersistence(a, inMemoryPersistence);
+  let cred;
+  try { cred = await signInWithEmailAndPassword(a, creds.email, creds.key); }
+  catch (e) {
+    if (!/user-not-found|invalid-credential|invalid-login/.test(e?.code || "")) throw e;
+    cred = await createUserWithEmailAndPassword(a, creds.email, creds.key);
+  }
+  const h = PROFILES[svc.profile];
+  if (h) await h({ db: getDatabase(app), uid: cred.user.uid, prof });
+  await signOut(a);
+}
+
+/* ===== Entrée dans le service (session valide) ===== */
+let IORIGIN = "", expected = "", sent = false, recovered = false, readyT, ctx = null;
+const toFrame = m => frame.contentWindow && frame.contentWindow.postMessage(m, IORIGIN);
+
+async function enter(u) {
+  show("splash");
+  try {
+    const [pS, sS, ssoS] = await Promise.all([get(ref(db2, "users/" + u.uid)), get(ref(db2, "services/" + SVC.id)), get(ref(db2, "users/" + u.uid + "/sso"))]);
+    if (!pS.exists()) { await signOut(a2); show("login"); return msg("Compte incomplet. Recréez votre compte avec un code d’invitation valide."); }
+    const svc = sS.val(), sso = ssoS.val() || {};
+    if (!svc || !svc.url) { show("login"); return msg("Ce service n’est pas disponible pour le moment."); }
+    const creds = await credsFor(u.uid, SVC.id, sso);
+    if (!sso[SVC.id]) await provisionService(SVC.id, svc, pS.val(), creds);
+    ctx = { u, svc, prof: pS.val(), creds };
+    IORIGIN = new URL(svc.url).origin; expected = creds.email; sent = false; recovered = false;
+    clearTimeout(readyT); readyT = setTimeout(recover, 15000);
+    frame.src = svc.url;                       // l’adresse secrète n’apparaît qu’ici, après validation
+    provisionOthers(u, pS.val(), sso);         // compte créé en arrière-plan sur les autres services
+  } catch (e) { show("login"); msg(authErr(e)); }
+}
+async function provisionOthers(u, prof, sso) {
+  try {
+    const all = (await get(ref(db2, "services"))).val() || {};
+    for (const [id, s] of Object.entries(all)) {
+      if (id === SVC.id || sso[id]) continue;
+      try { const c = await credsFor(u.uid, id, sso); await provisionService(id, s, prof, c); } catch (x) {}
+    }
+  } catch (e) {}
+}
+async function recover() {                      // une seule tentative de réparation du compte du service
+  if (recovered || !ctx) { if (!frame.classList.contains("on")) { show("login"); msg("Le service ne répond pas. Réessayez."); } return; }
+  recovered = true;
+  try { await provisionService(SVC.id, ctx.svc, ctx.prof, ctx.creds); sent = true; toFrame({ type: "talco-login", email: ctx.creds.email, password: ctx.creds.key }); readyT = setTimeout(recover, 12000); }
+  catch (e) { show("login"); msg("Le service ne répond pas. Réessayez."); }
+}
+addEventListener("message", async e => {
+  if (!IORIGIN || e.origin !== IORIGIN || e.source !== frame.contentWindow) return;
+  const m = e.data || {};
+  if (m.type === "talco-hello") {
+    if (ctx && m.email !== expected && !sent) { sent = true; toFrame({ type: "talco-login", email: ctx.creds.email, password: ctx.creds.key }); }
+  } else if (m.type === "talco-ready") { clearTimeout(readyT); show("app"); if (dip) toFrame({ type: "talco-install-ready" }); }
+  else if (m.type === "talco-login-error") { clearTimeout(readyT); recover(); }
+  else if (m.type === "talco-install" && dip) { dip.prompt(); dip.userChoice.catch(() => {}).finally(() => { dip = null; }); }
+  else if (m.type === "talco-logout") {      // déconnexion = déconnexion de la session enregistrée
+    clearTimeout(readyT); expected = ""; ctx = null; frame.src = "about:blank";
+    try { await signOut(a2); } catch (x) {}
+    show("login"); msg("");
+  }
+});
+let dip = null;
+addEventListener("beforeinstallprompt", e => { e.preventDefault(); dip = e; if (frame.classList.contains("on")) toFrame({ type: "talco-install-ready" }); });
+addEventListener("appinstalled", () => { dip = null; if (frame.classList.contains("on")) toFrame({ type: "talco-installed" }); });
 if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 
 /* ===== Connexion ===== */
@@ -191,15 +291,8 @@ $("#fin").onsubmit = async e => {
     }
     const u = (await signInWithEmailAndPassword(a2, email, pw)).user;
     if (!u.emailVerified) { pending = u; $("#resend").classList.remove("hidden"); return msg("Adresse e-mail non validée. Cliquez sur le lien reçu par mail, puis reconnectez-vous."); }
-    const p = await get(ref(db2, "users/" + u.uid));
-    if (!p.exists()) { await signOut(a2); return msg("Compte incomplet. Recréez votre compte avec un code d’invitation valide."); }
-    await provision(email, pw, p.val());               // crée / répare le compte sur les autres serveurs
-    await signOut(a2);
-    msg("Connexion…", true);
     $("#lpw").value = "";
-    waitT = setTimeout(() => { showCard(); msg("L’interface met trop de temps à répondre. Réessayez."); busy($("#fin"), false); }, 20000);
-    toFrame({ type: "exchange-login", email, password: pw });
-    return;
+    await enter(u);
   } catch (er) { msg(authErr(er)); }
   finally { busy(e.target, false); }
 };
@@ -220,12 +313,11 @@ $("#forgot").onclick = async () => {
       if (s && s.exists()) email = s.val().email; else return msg("Si le compte existe, un mail de réinitialisation a été envoyé.", true);
     }
     await sendPasswordResetEmail(a2, email);
-    for (const s of SERVERS) { try { await sendPasswordResetEmail(s.auth, email); } catch (x) {} }
-    msg("Si le compte existe, des mails de réinitialisation ont été envoyés (un par serveur). Choisissez le même mot de passe dans chacun.", true);
+    msg("Si le compte existe, un mail de réinitialisation a été envoyé.", true);
   } catch (er) { msg(authErr(er)); }
 };
 
-/* ===== Inscription : crée le compte sur le serveur principal puis sur tous les autres ===== */
+/* ===== Inscription (un seul compte : les accès aux services en sont déduits) ===== */
 $("#fup").onsubmit = async e => {
   e.preventDefault(); msg("");
   const code = $("#sinv").value.trim(), prenom = $("#spre").value.trim(), nom = $("#snom").value.trim(),
@@ -244,19 +336,21 @@ $("#fup").onsubmit = async e => {
   try {
     if ((await get(ref(db2, "pseudos/" + pseudo))).exists()) return msg("Ce pseudo est déjà pris.");
     u = (await createUserWithEmailAndPassword(a2, email, p1)).user;
-    /* Profil + pseudo en une seule écriture ; le code d’invitation est vérifié par les règles du serveur. */
     try { await update(ref(db2), { ["users/" + u.uid]: { prenom, nom, tel, email, pseudo, invite: code, createdAt: serverTimestamp() }, ["pseudos/" + pseudo]: { uid: u.uid, email } }); }
     catch (er) { await deleteUser(u).catch(() => {}); u = null; return msg("Code d’invitation invalide (ou pseudo déjà pris)."); }
     await sendEmailVerification(u);
-    try { await provision(email, p1, { prenom, nom, pseudo }); } catch (x) { /* réparé automatiquement à la 1re connexion */ }
     await signOut(a2); u = null;
     e.target.reset();
-    document.querySelector('.tabs button[data-t="in"]').click();
+    document.querySelector('#tabs button[data-t="in"]').click();
     msg("Compte créé ! Un mail de validation vient d’être envoyé à " + email + ". Cliquez sur le lien, puis connectez-vous.", true);
   } catch (er) { if (u) await deleteUser(u).catch(() => {}); msg(authErr(er)); }
   finally { busy(e.target, false); }
 };
+
+/* ===== Démarrage : session enregistrée ? alors direct dans le service ===== */
+const u0 = await new Promise(res => { const off = onAuthStateChanged(a2, u => { off(); res(u); }); setTimeout(() => res(null), 6000); });
+if (u0 && u0.emailVerified) enter(u0); else show("login");
 </script>
-<noscript><p style="padding:20px;font-family:sans-serif">JavaScript est nécessaire pour utiliser TalcoExchange.</p></noscript>
+<noscript><p style="padding:20px;font-family:sans-serif">JavaScript est nécessaire.</p></noscript>
 </body>
 </html>
