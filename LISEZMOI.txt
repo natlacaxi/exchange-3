@@ -1,23 +1,22 @@
-LOGIN COMMUN TALCO — depot "exchange-3" (https://natlacaxi.github.io/exchange-3/)
+TalcoExchange — PAGE DE CONNEXION (depot "exchange-3")
 GroupeTalco / TalcoAdministration / © TalcoInc2026
 
-Ce login est IDENTIQUE pour tous les services. Pour un nouveau service (cloud, map, music...) :
-  1. copier ce dossier dans le depot du service ;
-  2. changer service.json (id, name, tag, color), les icones et manifest.webmanifest ;
-  3. ajouter services/<id> dans la Realtime Database d'itn-2 (name, url secrete, profile, firebase{...}) ;
-  4. si le service a un profil a creer, ajouter sa fonction dans PROFILES (index.html).
-index.html ne change pas.
+Adresse : https://natlacaxi.github.io/exchange-3/
+Role : connexion + creation de compte, puis affichage de l'interface Exchange (autre depot, adresse secrete) en iframe plein ecran.
+Pour l'utilisateur c'est un seul site : tant qu'il est connecte, la page de connexion n'apparait pas.
 
-Fonctionnement
-- Session ENREGISTREE sur itn-2 (meme domaine que le portail ITN : une connexion dans ITN ouvre tous les services sans rien retaper).
-- Session valide : lecture de services/<id> dans Firebase -> l'adresse secrete est chargee dans un iframe plein ecran -> le site est ouvert.
-  L'adresse secrete n'est ecrite nulle part dans ce code : elle n'est lue qu'apres connexion validee.
-- Pas de session : carte de connexion / creation de compte, puis meme chemin.
-- Chaque service a ses propres identifiants internes, derives du compte (cle secrete par service dans users/<uid>/sso/<id>) :
-  un changement de mot de passe n'a aucun effet sur eux. Les comptes des autres services se creent tout seuls en arriere-plan.
-- Deconnexion dans un service = deconnexion de la session enregistree.
-- Installation de l'appli : on installe CE login ; il rouvre directement le service tant que la session est enregistree
-  (sur iPhone/iPad l'appli installee a son propre stockage : une connexion a refaire une fois dans l'appli).
+Fichiers : tout a la racine du depot (index.html, legal.html, favicons, manifest, sw.js...).
+L'adresse de l'interface est definie UNE SEULE FOIS, en haut du script de index.html : INTERFACE_URL.
 
-Securite : le code d'un site GitHub Pages reste lisible par toute personne connectee. Ce qui est protege : l'acces aux donnees (regles Firebase),
-la revelation de l'adresse (connexion obligatoire) et les droits admin (code admin + cle secrete, voir firebase-prive.zip).
+Comment ca marche
+- Au chargement, l'interface s'ouvre (invisible) et dit si elle a deja une session. Oui : elle s'affiche directement. Non : la carte de connexion apparait.
+- Connexion : pseudo ou e-mail + mot de passe -> verification sur le serveur principal (itn-2, e-mail valide) -> creation/reparation du compte sur les autres serveurs
+  -> envoi de l'e-mail et du mot de passe a l'interface par message (postMessage, destinataire verifie) -> l'interface ouvre sa session et la garde.
+- Inscription : cree le compte sur itn-2 (code d'invitation verifie par les regles) PUIS sur tous les serveurs de la liste SERVERS (aujourd'hui : itn-3).
+  Pour ajouter itn-4, itn-5... : ajouter une entree dans SERVERS avec sa fonction "ensure".
+- Cette page ne garde rien (sessions en memoire seulement).
+
+A faire une fois
+1. Firebase itn-2 et itn-3 > Authentication : activer E-mail/Mot de passe ; Domaines autorises : natlacaxi.github.io (itn-2, itn-3)
+   ET talcoitn-k9x2mp7vl4wq6ty1hb5jn3rd8fk4sz.github.io (itn-3 : necessaire car l'interface s'y connecte).
+2. Publier les regles : regles/itn-2_realtime.rules.json (itn-2) et regles/itn-3_realtime.rules.json (itn-3) du zip talco-complet.
