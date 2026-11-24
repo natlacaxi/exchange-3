@@ -191,7 +191,7 @@ const authErr = e => ({
   "auth/invalid-credential": "Identifiants incorrects.", "auth/wrong-password": "Identifiants incorrects.", "auth/user-not-found": "Identifiants incorrects.",
   "auth/invalid-email": "Adresse e-mail invalide.", "auth/email-already-in-use": "Cette adresse e-mail est déjà utilisée.", "auth/weak-password": "Mot de passe trop faible.",
   "auth/too-many-requests": "Trop de tentatives. Réessayez dans quelques minutes.", "auth/network-request-failed": "Problème de réseau. Vérifiez votre connexion."
-})[e && e.code] || (e && e.userMessage) || "Une erreur est survenue. Réessayez.";
+})[e && e.code] || (e && e.userMessage) || ("Une erreur est survenue (" + ((e && (e.code || e.message)) || "inconnue") + "). Réessayez.");
 $("#tabs").addEventListener("click", e => {
   const b = e.target.closest("button[data-t]"); if (!b) return;
   document.querySelectorAll("#tabs button").forEach(x => x.classList.toggle("on", x === b));
@@ -288,7 +288,8 @@ async function provisionService(id, svc, prof, creds) {
 }
 
 /* ===== Entrée dans le service (session valide) ===== */
-let IORIGIN = "", expected = "", sent = false, recovered = false, readyT, ctx = null, lastErr = "";
+let IORIGIN = "", expected = "", sent = false, recovered = false, readyT, ctx = null, lastErr = "", helloSeen = false;
+const sendLogin = () => { const c = { email: ctx.creds.email, password: ctx.creds.key }; toFrame({ type: "talco-login", ...c }); toFrame({ type: "exchange-login", ...c }); };
 const toFrame = m => frame.contentWindow && frame.contentWindow.postMessage(m, IORIGIN);
 
 async function enter(u) {
@@ -311,6 +312,8 @@ async function enter(u) {
     IORIGIN = new URL(svc.url).origin; expected = creds.email; sent = false; recovered = false;
     clearTimeout(readyT); readyT = setTimeout(recover, 15000);
     setStep("chargement du site (" + IORIGIN.replace("https://", "").slice(0, 24) + "…)");
+    helloSeen = false;
+    frame.onload = () => setTimeout(() => { if (!helloSeen && !frame.classList.contains("on")) lastErr = lastErr || ("aucune réponse de " + IORIGIN.replace("https://", "")); }, 6000);
     frame.src = svc.url;                       // l’adresse secrète n’apparaît qu’ici, après validation
     provisionOthers(u, pS.val(), sso);         // compte créé en arrière-plan sur les autres services
   } catch (e) { show("login"); msg(authErr(e)); }
@@ -327,18 +330,20 @@ async function provisionOthers(u, prof, sso) {
 async function recover() {                      // une seule tentative de réparation du compte du service
   if (recovered || !ctx) { if (!frame.classList.contains("on")) { show("login"); msg("Le service ne répond pas. Réessayez." + (lastErr ? " (" + lastErr + ")" : "")); } return; }
   recovered = true;
-  try { await provisionService(SVC.id, ctx.svc, ctx.prof, ctx.creds); sent = true; toFrame({ type: "talco-login", email: ctx.creds.email, password: ctx.creds.key }); readyT = setTimeout(recover, 12000); }
-  catch (e) { show("login"); msg("Le service ne répond pas. Réessayez." + (lastErr ? " (" + lastErr + ")" : "")); }
+  try { await provisionService(SVC.id, ctx.svc, ctx.prof, ctx.creds); sent = true; sendLogin(); readyT = setTimeout(recover, 12000); }
+  catch (e) { lastErr = "compte du service : " + (e.code || e.message || "erreur"); show("login"); msg("Le service ne répond pas. Réessayez. (" + lastErr + ")"); }
 }
 addEventListener("message", async e => {
   if (!IORIGIN || e.origin !== IORIGIN || e.source !== frame.contentWindow) return;
-  const m = e.data || {};
+  const m = { ...(e.data || {}) };
+  if (typeof m.type === "string") m.type = m.type.replace(/^exchange-/, "talco-");
   if (m.type === "talco-hello") {
+    helloSeen = true;
     setStep("connexion au site…");
-    if (ctx && m.email !== expected && !sent) { sent = true; toFrame({ type: "talco-login", email: ctx.creds.email, password: ctx.creds.key }); }
+    if (ctx && m.email !== expected && !sent) { sent = true; sendLogin(); }
   } else if (m.type === "talco-error") { lastErr = String(m.message || "").slice(0, 160); }
   else if (m.type === "talco-ready") { clearTimeout(readyT); show("app"); if (dip) toFrame({ type: "talco-install-ready" }); }
-  else if (m.type === "talco-login-error") { clearTimeout(readyT); recover(); }
+  else if (m.type === "talco-login-error") { lastErr = "connexion au site : " + String(m.code || m.message || "refusée").slice(0, 140); clearTimeout(readyT); recover(); }
   else if (m.type === "talco-install" && dip) { dip.prompt(); dip.userChoice.catch(() => {}).finally(() => { dip = null; }); }
   else if (m.type === "talco-logout") {      // déconnexion = déconnexion de la session enregistrée
     clearTimeout(readyT); expected = ""; ctx = null; frame.src = "about:blank";
