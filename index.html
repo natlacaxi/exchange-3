@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
-:root{--ac:#2f6bff;--tx:#0f172a;--mu:#64748b;--bd:#ffffff66;--gl:#ffffffb8;--in:#ffffffcc;--bg:#e9eefb;--rd:#e11d48;--ok:#059669}
+:root{--w:url("https://natlacaxi.github.io/itnb-screen/fond%20t%C3%A9l%C3%A9phone%20itnb.png");--ac:#2f6bff;--tx:#0f172a;--mu:#64748b;--bd:#ffffff66;--gl:#ffffffb8;--in:#ffffffcc;--bg:#e9eefb;--rd:#e11d48;--ok:#059669}
 @media (prefers-color-scheme:dark){:root{--tx:#eef2ff;--mu:#9aa6c4;--bd:#ffffff1f;--gl:#10172bb8;--in:#0b1226cc;--bg:#070b18;--rd:#fb7185;--ok:#34d399}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
@@ -20,9 +20,11 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--tx);font:16px/1.
 #frame.on{visibility:visible}
 .hidden{display:none!important}
 
-/* fond animé */
-.bg{position:fixed;inset:0;overflow:hidden;background:var(--bg)}
-.bg i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.55;animation:fl 18s ease-in-out infinite alternate}
+/* fond : image téléphone ou ordinateur selon l’écran, noir par défaut */
+@media (min-width:761px) and (orientation:landscape){:root{--w:url("https://natlacaxi.github.io/itnb-screen/fond%20ordi%20itnb.png")}}
+.bg{position:fixed;inset:0;overflow:hidden;background:#000 var(--w) center/cover no-repeat}
+.bg::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.28)}
+.bg i{display:none;position:absolute;border-radius:50%;filter:blur(70px);opacity:.55;animation:fl 18s ease-in-out infinite alternate}
 .bg i:nth-child(1){width:55vmax;height:55vmax;left:-18vmax;top:-20vmax;background:var(--ac)}
 .bg i:nth-child(2){width:48vmax;height:48vmax;right:-16vmax;bottom:-18vmax;background:#a855f7;animation-delay:-6s}
 .bg i:nth-child(3){width:34vmax;height:34vmax;left:35%;top:45%;background:#22d3ee;opacity:.32;animation-delay:-11s}
@@ -91,7 +93,7 @@ body.hasbn .screen{padding-top:calc(54px + env(safe-area-inset-top,0px))}
 
 <iframe id="frame" title="Service" allow="camera; microphone; clipboard-write; autoplay; fullscreen; web-share" referrerpolicy="origin"></iframe>
 
-<div id="splash" class="screen"><img id="sLogo" src="icon-192.png" alt=""><div class="dots"><b></b><b></b><b></b></div></div>
+<div id="splash" class="screen"><img id="sLogo" src="icon-192.png" alt=""><div class="dots"><b></b><b></b><b></b></div><div id="sStep" style="color:var(--mu);font-size:.85rem;min-height:1.2em;text-align:center;padding:0 20px"></div></div>
 
 <div id="login" class="screen hidden">
   <div class="card">
@@ -178,7 +180,12 @@ const app2 = getApps().find(a => a.name === "p1") || initializeApp(C2, "p1");
 const a2 = getAuth(app2), db2 = getDatabase(app2);
 
 /* ===== Affichage ===== */
-const show = w => { $("#splash").classList.toggle("hidden", w !== "splash"); $("#login").classList.toggle("hidden", w !== "login"); $("#susp").classList.toggle("hidden", w !== "susp"); frame.classList.toggle("on", w === "app"); document.body.classList.toggle("hasbn", w !== "app" && !$("#bn").classList.contains("hidden")); };
+let step = "démarrage", wd;
+const setStep = t => { step = t; const e = $("#sStep"); if (e) e.textContent = t; };
+const show = w => {
+  clearTimeout(wd);
+  if (w === "splash") wd = setTimeout(() => { show("login"); msg("Le chargement est bloqué à l’étape : " + step + (lastErr ? " (" + lastErr + ")" : "") + ". Réessayez ou envoyez ce message à l’administrateur."); }, 25000);
+  $("#splash").classList.toggle("hidden", w !== "splash"); $("#login").classList.toggle("hidden", w !== "login"); $("#susp").classList.toggle("hidden", w !== "susp"); frame.classList.toggle("on", w === "app"); document.body.classList.toggle("hasbn", w !== "app" && !$("#bn").classList.contains("hidden")); };
 const msg = (t, ok) => { const m = $("#msg"); m.textContent = t || ""; m.className = t ? (ok ? "ok" : "bad") : ""; };
 const busy = (f, b) => { f.querySelectorAll("input,button").forEach(x => x.disabled = b); const bt = f.querySelector(".btn"); if (bt) bt.classList.toggle("load", b); };
 const authErr = e => ({
@@ -208,6 +215,7 @@ function paintBanner(b) {
   else el.textContent = b.text;
 }
 async function loadStatus() {
+  setStep("lecture du statut…");
   try {
     const st = (await get(ref(db2, "status"))).val() || {};
     paintBanner(st.banner);
@@ -276,18 +284,23 @@ const toFrame = m => frame.contentWindow && frame.contentWindow.postMessage(m, I
 async function enter(u) {
   show("splash");
   try {
+    setStep("lecture du compte…");
     const pS = await get(ref(db2, "users/" + u.uid));
     if (pS.exists() && suspended && !ADMINS.includes(pS.val().pseudo)) { showSusp(false); return; }
+    setStep("lecture du service…");
     const [sS, ssoS] = await Promise.all([get(ref(db2, "services/" + SVC.id)), get(ref(db2, "users/" + u.uid + "/sso"))]);
     if (!pS.exists()) { await signOut(a2); show("login"); return msg("Compte incomplet. Recréez votre compte avec un code d’invitation valide."); }
     if (suspended && !ADMINS.includes(pS.val().pseudo)) { showSusp(false); return; }
     const svc = sS.val(), sso = ssoS.val() || {};
     if (!svc || !svc.url) { show("login"); return msg("Ce service n’est pas disponible pour le moment."); }
+    setStep("préparation de l’accès…");
     const creds = await credsFor(u.uid, SVC.id, sso);
+    if (!sso[SVC.id]) setStep("création du compte du service…");
     if (!sso[SVC.id]) await provisionService(SVC.id, svc, pS.val(), creds);
     ctx = { u, svc, prof: pS.val(), creds };
     IORIGIN = new URL(svc.url).origin; expected = creds.email; sent = false; recovered = false;
     clearTimeout(readyT); readyT = setTimeout(recover, 15000);
+    setStep("chargement du site (" + IORIGIN.replace("https://", "").slice(0, 24) + "…)");
     frame.src = svc.url;                       // l’adresse secrète n’apparaît qu’ici, après validation
     provisionOthers(u, pS.val(), sso);         // compte créé en arrière-plan sur les autres services
   } catch (e) { show("login"); msg(authErr(e)); }
@@ -311,6 +324,7 @@ addEventListener("message", async e => {
   if (!IORIGIN || e.origin !== IORIGIN || e.source !== frame.contentWindow) return;
   const m = e.data || {};
   if (m.type === "talco-hello") {
+    setStep("connexion au site…");
     if (ctx && m.email !== expected && !sent) { sent = true; toFrame({ type: "talco-login", email: ctx.creds.email, password: ctx.creds.key }); }
   } else if (m.type === "talco-error") { lastErr = String(m.message || "").slice(0, 160); }
   else if (m.type === "talco-ready") { clearTimeout(readyT); show("app"); if (dip) toFrame({ type: "talco-install-ready" }); }
