@@ -82,8 +82,13 @@ form{display:none;flex-direction:column;gap:12px}form.on{display:flex;animation:
 #bn .mq{overflow:hidden;white-space:nowrap}#bn .mq span{display:inline-block;padding-left:100%;animation:mq 20s linear infinite}
 @keyframes mq{to{transform:translateX(-100%)}}
 body.hasbn .screen{padding-top:calc(54px + env(safe-area-inset-top,0px))}
-#susp .ico{font-size:2.6rem;text-align:center;margin-bottom:6px}
-#susp p.m{text-align:center;margin:.6em 0 1.2em;line-height:1.5}
+/* écran de suspension : plein écran, blanc ou noir selon le thème, message au centre */
+#susp{z-index:30;background:#fff;color:#0f172a;align-items:center;justify-content:center;text-align:center}
+@media (prefers-color-scheme:dark){#susp{background:#000;color:#f1f5f9}}
+#susp .sm{max-width:680px;padding:24px}
+#susp p{margin:0;font-size:clamp(1.25rem,4.4vw,2rem);line-height:1.5;font-weight:600;white-space:pre-wrap;overflow-wrap:anywhere}
+#susp .sf{position:fixed;left:0;right:0;bottom:max(14px,env(safe-area-inset-bottom,0px));text-align:center}
+#susp .lnk{color:inherit;opacity:.3;font-size:.78rem}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -136,21 +141,15 @@ body.hasbn .screen{padding-top:calc(54px + env(safe-area-inset-top,0px))}
 </div>
 
 <div id="susp" class="screen hidden">
-  <div class="card">
-    <img class="logo" src="icon-192.png" alt="">
-    <div class="ico">🛠️</div>
-    <h1 id="suTitle">Service suspendu</h1>
-    <p class="m" id="suMsg"></p>
-    <button class="btn" type="button" id="suRetry">Réessayer</button>
-    <button class="lnk" type="button" id="suAdmin">Connexion administrateur</button>
-  </div>
+  <div class="sm"><p id="suMsg"></p></div>
+  <div class="sf"><button class="lnk" type="button" id="suAdmin">Administrateur</button></div>
 </div>
 
 <script type="module">
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getAuth, setPersistence, inMemoryPersistence, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, signOut, deleteUser }
   from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import { getDatabase, ref, get, set, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+import { getDatabase, ref, get, set, update, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
 
 /* ============================================================================
    LOGIN COMMUN À TOUS LES SERVICES TALCO
@@ -214,23 +213,34 @@ function paintBanner(b) {
   if (b.scroll) { const w = document.createElement("div"); w.className = "mq"; const sp = document.createElement("span"); sp.textContent = b.text; w.appendChild(sp); el.appendChild(w); }
   else el.textContent = b.text;
 }
-async function loadStatus() {
+let isAdminUser = false, started = false;
+function applyStatus(st) {
+  st = st || {};
+  paintBanner(st.banner);
+  if (st.defaultMessage) defMsg = st.defaultMessage;
+  const me = (st.services || {})[SVC.id] || {};
+  const was = suspended;
+  suspended = me.suspended === true; suspMsg = me.message || "";
+  if (!started) return;
+  if (suspended && !isAdminUser) {                       // suspension : tout le monde est sorti immédiatement
+    clearTimeout(readyT); frame.src = "about:blank"; ctx = null; expected = "";
+    showSusp(true);
+  } else if (!suspended && was && !$("#susp").classList.contains("hidden")) location.reload();   // reprise : on rouvre tout seul
+  else if (suspended && !$("#susp").classList.contains("hidden")) $("#suMsg").textContent = suspMsg || defMsg;   // message modifié en direct
+}
+function loadStatus() {                                   // abonnement permanent (itn-2 > status, lecture publique)
   setStep("lecture du statut…");
-  try {
-    const st = (await get(ref(db2, "status"))).val() || {};
-    paintBanner(st.banner);
-    if (st.defaultMessage) defMsg = st.defaultMessage;
-    const me = (st.services || {})[SVC.id] || {};
-    suspended = me.suspended === true; suspMsg = me.message || "";
-  } catch (e) {}
+  return new Promise(res => {
+    let first = true; const done = () => { if (first) { first = false; res(); } };
+    onValue(ref(db2, "status"), snap => { applyStatus(snap.val()); done(); }, done);
+    setTimeout(done, 6000);
+  });
 }
 function showSusp(canAdmin) {
-  $("#suTitle").textContent = "Service suspendu";
   $("#suMsg").textContent = suspMsg || defMsg;
   $("#suAdmin").classList.toggle("hidden", !canAdmin);
   show("susp");
 }
-$("#suRetry").onclick = () => location.reload();
 $("#suAdmin").onclick = () => show("login");
 
 /* ===== Comptes dérivés sur les serveurs des services (même principe pour les 19 services) ===== */
@@ -286,11 +296,11 @@ async function enter(u) {
   try {
     setStep("lecture du compte…");
     const pS = await get(ref(db2, "users/" + u.uid));
-    if (pS.exists() && suspended && !ADMINS.includes(pS.val().pseudo)) { showSusp(false); return; }
+    isAdminUser = pS.exists() && ADMINS.includes(pS.val().pseudo);
+    if (pS.exists() && suspended && !isAdminUser) { started = true; showSusp(false); return; }
     setStep("lecture du service…");
     const [sS, ssoS] = await Promise.all([get(ref(db2, "services/" + SVC.id)), get(ref(db2, "users/" + u.uid + "/sso"))]);
     if (!pS.exists()) { await signOut(a2); show("login"); return msg("Compte incomplet. Recréez votre compte avec un code d’invitation valide."); }
-    if (suspended && !ADMINS.includes(pS.val().pseudo)) { showSusp(false); return; }
     const svc = sS.val(), sso = ssoS.val() || {};
     if (!svc || !svc.url) { show("login"); return msg("Ce service n’est pas disponible pour le moment."); }
     setStep("préparation de l’accès…");
@@ -417,6 +427,7 @@ $("#fup").onsubmit = async e => {
 /* ===== Démarrage : session enregistrée ? alors direct dans le service ===== */
 await loadStatus();
 const u0 = await new Promise(res => { const off = onAuthStateChanged(a2, u => { off(); res(u); }); setTimeout(() => res(null), 6000); });
+started = true;
 if (u0 && u0.emailVerified) enter(u0); else if (suspended) showSusp(true); else show("login");
 </script>
 <noscript><p style="padding:20px;font-family:sans-serif">JavaScript est nécessaire.</p></noscript>
