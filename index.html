@@ -2,10 +2,17 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>Talco-IT-Networks</title>
 <meta name="robots" content="noindex">
-<meta name="theme-color" content="#0b1020">
+<meta name="theme-color" content="#0b1020" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#e9eefb" media="(prefers-color-scheme: light)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Talco">
+<meta name="format-detection" content="telephone=no">
+<meta name="color-scheme" content="light dark">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
@@ -15,14 +22,15 @@
 :root{--w:url("https://natlacaxi.github.io/itnb-screen/fond%20t%C3%A9l%C3%A9phone%20itnb.png");--ac:#2f6bff;--tx:#0f172a;--mu:#64748b;--bd:#ffffff66;--gl:#ffffffb8;--in:#ffffffcc;--bg:#e9eefb;--rd:#e11d48;--ok:#059669}
 @media (prefers-color-scheme:dark){:root{--tx:#eef2ff;--mu:#9aa6c4;--bd:#ffffff1f;--gl:#10172bb8;--in:#0b1226cc;--bg:#070b18;--rd:#fb7185;--ok:#34d399}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
-#frame{position:fixed;inset:0;width:100%;height:100%;border:0;background:var(--bg);visibility:hidden}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html,body{height:100%;margin:0;overscroll-behavior:none;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+#frame{position:fixed;top:0;right:0;bottom:0;left:0;top:env(safe-area-inset-top,0px);right:env(safe-area-inset-right,0px);bottom:env(safe-area-inset-bottom,0px);left:env(safe-area-inset-left,0px);width:auto;height:auto;border:0;background:transparent;color-scheme:normal;visibility:hidden}
 #frame.on{visibility:visible}
 .hidden{display:none!important}
 
 /* fond : image téléphone ou ordinateur selon l’écran, noir par défaut */
 @media (min-width:761px) and (orientation:landscape){:root{--w:url("https://natlacaxi.github.io/itnb-screen/fond%20ordi%20itnb.png")}}
-.bg{position:fixed;inset:0;overflow:hidden;background:#000 var(--w) center/cover no-repeat}
+.bg{position:fixed;top:0;right:0;bottom:0;left:0;inset:0;overflow:hidden;background:#000 var(--w) center/cover no-repeat}
 .bg::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.28)}
 .bg i{display:none;position:absolute;border-radius:50%;filter:blur(70px);opacity:.55;animation:fl 18s ease-in-out infinite alternate}
 .bg i:nth-child(1){width:55vmax;height:55vmax;left:-18vmax;top:-20vmax;background:var(--ac)}
@@ -30,7 +38,7 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--tx);font:16px/1.
 .bg i:nth-child(3){width:34vmax;height:34vmax;left:35%;top:45%;background:#22d3ee;opacity:.32;animation-delay:-11s}
 @keyframes fl{to{transform:translate3d(6vmax,4vmax,0) scale(1.12)}}
 
-.screen{position:fixed;inset:0;display:flex;overflow-y:auto;padding:max(18px,env(safe-area-inset-top,0px)) max(18px,env(safe-area-inset-right,0px)) max(18px,env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px))}
+.screen{position:fixed;top:0;right:0;bottom:0;left:0;inset:0;display:flex;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:max(18px,env(safe-area-inset-top,0px)) max(18px,env(safe-area-inset-right,0px)) max(18px,env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px))}
 #splash{align-items:center;justify-content:center;flex-direction:column;gap:18px}
 #splash img{width:92px;height:92px;border-radius:24px;box-shadow:0 12px 40px #0004;animation:pu 1.6s ease-in-out infinite}
 .dots{display:flex;gap:7px}.dots b{width:8px;height:8px;border-radius:50%;background:var(--ac);animation:dt 1s ease-in-out infinite}.dots b:nth-child(2){animation-delay:.15s}.dots b:nth-child(3){animation-delay:.3s}
@@ -89,6 +97,15 @@ body.hasbn .screen{padding-top:calc(54px + env(safe-area-inset-top,0px))}
 #susp p{margin:0;font-size:clamp(1.25rem,4.4vw,2rem);line-height:1.5;font-weight:600;white-space:pre-wrap;overflow-wrap:anywhere}
 #susp .sf{position:fixed;left:0;right:0;bottom:max(14px,env(safe-area-inset-bottom,0px));text-align:center}
 #susp .lnk{color:inherit;opacity:.3;font-size:.78rem}
+/* anciens navigateurs sans color-mix : couleurs de secours */
+@supports not (color: color-mix(in srgb, red, blue)) {
+  .btn{background:var(--ac);box-shadow:0 10px 26px #00000033}
+  .logo{box-shadow:0 10px 30px #00000040}
+  .f input:focus{box-shadow:0 0 0 4px #2f6bff38}
+  #msg.bad{background:#e11d4822}#msg.ok{background:#05966922}
+}
+.hint{display:none;margin:12px 0 0;padding:10px 12px;border-radius:14px;background:var(--in);font-size:.84rem;line-height:1.45;color:var(--tx)}
+.hint.on{display:block}.hint button{float:right;border:0;background:none;color:var(--mu);font-size:1.1rem;padding:0 4px;cursor:pointer}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -96,7 +113,7 @@ body.hasbn .screen{padding-top:calc(54px + env(safe-area-inset-top,0px))}
 <div id="bn" class="hidden" role="status"></div>
 <div class="bg"><i></i><i></i><i></i></div>
 
-<iframe id="frame" title="Service" allow="camera; microphone; clipboard-write; autoplay; fullscreen; web-share" referrerpolicy="origin"></iframe>
+<iframe id="frame" title="Service" allow="camera; microphone; geolocation; clipboard-write; clipboard-read; autoplay; fullscreen; web-share; screen-wake-lock; accelerometer; gyroscope; magnetometer; picture-in-picture" referrerpolicy="origin" allowfullscreen></iframe>
 
 <div id="splash" class="screen"><img id="sLogo" src="icon-192.png" alt=""><div class="dots"><b></b><b></b><b></b></div><div id="sStep" style="color:var(--mu);font-size:.85rem;min-height:1.2em;text-align:center;padding:0 20px"></div></div>
 
@@ -136,6 +153,8 @@ body.hasbn .screen{padding-top:calc(54px + env(safe-area-inset-top,0px))}
       <button class="btn" type="submit">Créer mon compte</button>
     </form>
 
+    <button class="lnk hidden" type="button" id="instBtn" style="width:100%">📲 Installer l’application</button>
+    <div class="hint" id="iosHint"><button type="button" id="iosX" aria-label="Fermer">×</button>Pour installer sur iPhone ou iPad : touchez <b>Partager</b> <span aria-hidden="true">⬆️</span> puis <b>Sur l’écran d’accueil</b>.</div>
     <div class="foot"><a href="legal.html#legal" target="_blank" rel="noopener">Mentions légales</a><br>© TalcoInc2026 — GroupeTalco</div>
   </div>
 </div>
@@ -171,6 +190,7 @@ const hexOf = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0
 let SVC = { id: "exchange", name: "Talco", tag: "", color: "#2f6bff" };
 try { SVC = { ...SVC, ...(await (await fetch("service.json", { cache: "no-store" })).json()) }; } catch (e) {}
 document.title = SVC.name + " | Talco-IT-Networks";
+document.querySelector('meta[name="apple-mobile-web-app-title"]').content = SVC.name;
 $("#sName").textContent = SVC.name; if (SVC.tag) $("#sTag").textContent = SVC.tag;
 document.documentElement.style.setProperty("--ac", SVC.color);
 
@@ -261,22 +281,22 @@ const why = e => ((e && e.step) ? e.step + " — " : "") + ((e && (e.code || e.m
 /* Profils à créer sur le serveur d’un service (un par type de service). */
 const PROFILES = {
   async exchange({ db, uid, prof }) {
+    if ((await st("lecture du profil", () => get(ref(db, "users/" + uid)))).exists()) return;
     const id = prof.pseudo, name = (((prof.prenom || "") + " " + (prof.nom || "")).trim() || id).slice(0, 40);
+    const owner = (await st("lecture de l’identifiant", () => get(ref(db, "idIndex/" + id)))).val();
+    if (owner && owner !== uid) throw { step: "identifiant déjà pris", code: "ancien compte « " + id + " » encore présent dans itn-3 : supprimer les nœuds idIndex, users et admins de la Realtime Database d’itn-3" };
     if (ADMINS.includes(id)) {
       const k = await st("clé admin (itn-2 > config/adminKeys/exchange)", async () => (await get(ref(db2, "config/adminKeys/exchange"))).val());
-      if (!k) throw { step: "clé admin", code: "absente (importer itn-2_donnees_a_importer.json dans itn-2)" };
-      if (!(await st("lecture des droits admin", () => get(ref(db, "admins/" + uid)))).exists()) await st("droits admin (règles itn-3)", () => set(ref(db, "admins/" + uid), k));
+      if (!k) throw { step: "clé admin", code: "absente (importer DONNEES_itn-2_a_importer.json dans itn-2)" };
+      if (!(await get(ref(db, "admins/" + uid))).exists()) await st("droits admin (règles itn-3)", () => set(ref(db, "admins/" + uid), k));
     }
-    if ((await st("lecture du profil", () => get(ref(db, "users/" + uid)))).exists()) return;
-    const owner = (await st("lecture de l’identifiant", () => get(ref(db, "idIndex/" + id)))).val();
-    if (owner && owner !== uid) throw { step: "identifiant déjà pris", code: "ancien compte « " + id + " » encore présent dans itn-3 : le supprimer depuis TalcoAdministration (ou supprimer les nœuds idIndex, users et admins d’itn-3)" };
     if (owner !== uid) await st("identifiant (règles itn-3)", () => set(ref(db, "idIndex/" + id), uid));
     await st("profil (règles itn-3)", () => set(ref(db, "users/" + uid), { id, idLower: id, name, createdAt: serverTimestamp(), terms: 1 }));
   },
   async map({ db, uid, prof }) {
     if (ADMINS.includes(String(prof.pseudo).toLowerCase())) {
       const k = await st("clé admin (itn-2 > config/adminKeys/map)", async () => (await get(ref(db2, "config/adminKeys/map"))).val());
-      if (!k) throw { step: "clé admin", code: "absente (importer itn-2_donnees_a_importer.json dans itn-2)" };
+      if (!k) throw { step: "clé admin", code: "absente (importer DONNEES_itn-2_a_importer.json dans itn-2)" };
       if (!(await get(ref(db, "admins/" + uid))).exists()) await st("droits admin (règles itn-5)", () => set(ref(db, "admins/" + uid), k));
     }
     if (!(await st("lecture du profil", () => get(ref(db, "users/" + uid)))).exists())
@@ -287,7 +307,7 @@ const PROFILES = {
       await st("profil (règles itn-4)", () => set(ref(db, "profiles/" + uid), { name: String(prof.pseudo).slice(0, 40) }));
     if (ADMINS.includes(prof.pseudo)) {
       const k = await st("clé admin (itn-2 > config/adminKeys/cloud)", async () => (await get(ref(db2, "config/adminKeys/cloud"))).val());
-      if (!k) throw { step: "clé admin", code: "absente (importer itn-2_donnees_a_importer.json dans itn-2)" };
+      if (!k) throw { step: "clé admin", code: "absente (importer DONNEES_itn-2_a_importer.json dans itn-2)" };
       if (!(await get(ref(db, "admins/" + uid))).exists()) await st("droits admin (règles itn-4)", () => set(ref(db, "admins/" + uid), k));
     }
   }
@@ -299,10 +319,7 @@ async function provisionService(id, svc, prof, creds) {
   try { cred = await signInWithEmailAndPassword(a, creds.email, creds.key); }
   catch (e) {
     if (!/user-not-found|invalid-credential|invalid-login/.test(e?.code || "")) throw e;
-    try { cred = await createUserWithEmailAndPassword(a, creds.email, creds.key); }
-    catch (e2) {                                         // créé entre-temps par une autre ouverture : on se reconnecte
-      if (e2 && e2.code === "auth/email-already-in-use") cred = await signInWithEmailAndPassword(a, creds.email, creds.key); else throw e2;
-    }
+    cred = await createUserWithEmailAndPassword(a, creds.email, creds.key);
   }
   const h = PROFILES[svc.profile];
   if (h) await h({ db: getDatabase(app), uid: cred.user.uid, prof });
@@ -318,18 +335,18 @@ async function enter(u) {
   show("splash");
   try {
     setStep("lecture du compte…");
-    const pS = await st("lecture du compte (itn-2 users)", () => get(ref(db2, "users/" + u.uid)));
+    const pS = await get(ref(db2, "users/" + u.uid));
     isAdminUser = pS.exists() && ADMINS.includes(pS.val().pseudo);
     if (pS.exists() && suspended && !isAdminUser) { started = true; showSusp(false); return; }
     setStep("lecture du service…");
-    const [sS, ssoS] = await Promise.all([st("lecture du service (itn-2 services/" + SVC.id + ")", () => get(ref(db2, "services/" + SVC.id))), st("lecture des accès (itn-2 users/sso)", () => get(ref(db2, "users/" + u.uid + "/sso")))]);
+    const [sS, ssoS] = await Promise.all([get(ref(db2, "services/" + SVC.id)), get(ref(db2, "users/" + u.uid + "/sso"))]);
     if (!pS.exists()) { await signOut(a2); show("login"); return msg("Compte incomplet. Recréez votre compte avec un code d’invitation valide."); }
     const svc = sS.val(), sso = ssoS.val() || {};
     if (!svc || !svc.url) { show("login"); return msg("Ce service n’est pas disponible pour le moment."); }
     setStep("préparation de l’accès…");
-    const creds = await st("clé d’accès au service (itn-2 users/sso)", () => credsFor(u.uid, SVC.id, sso));
+    const creds = await credsFor(u.uid, SVC.id, sso);
     if (!sso[SVC.id]) setStep("création du compte du service…");
-    if (!sso[SVC.id]) await st("compte du service", () => provisionService(SVC.id, svc, pS.val(), creds));
+    if (!sso[SVC.id]) await provisionService(SVC.id, svc, pS.val(), creds);
     ctx = { u, svc, prof: pS.val(), creds };
     IORIGIN = new URL(svc.url).origin; expected = creds.email; sent = false; recovered = false;
     clearTimeout(readyT); readyT = setTimeout(recover, 15000);
@@ -374,8 +391,14 @@ addEventListener("message", async e => {
   }
 });
 let dip = null;
-addEventListener("beforeinstallprompt", e => { e.preventDefault(); dip = e; if (frame.classList.contains("on")) toFrame({ type: "talco-install-ready" }); });
-addEventListener("appinstalled", () => { dip = null; if (frame.classList.contains("on")) toFrame({ type: "talco-installed" }); });
+const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+if (isIOS && !standalone && !lsGet("talco-ios-hint")) $("#iosHint").classList.add("on");
+$("#iosX").onclick = () => { $("#iosHint").classList.remove("on"); lsSet("talco-ios-hint", "1"); };
+addEventListener("beforeinstallprompt", e => { e.preventDefault(); dip = e; if (!standalone) $("#instBtn").classList.remove("hidden"); if (frame.classList.contains("on")) toFrame({ type: "talco-install-ready" }); });
+$("#instBtn").onclick = () => { if (dip) { dip.prompt(); dip.userChoice.catch(() => {}).finally(() => { dip = null; $("#instBtn").classList.add("hidden"); }); } };
+addEventListener("appinstalled", () => { dip = null; $("#instBtn").classList.add("hidden"); if (frame.classList.contains("on")) toFrame({ type: "talco-installed" }); });
 if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 
 /* ===== Connexion ===== */
