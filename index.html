@@ -24,7 +24,7 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 html,body{height:100%;margin:0;overscroll-behavior:none;background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
-#frame{position:fixed;top:0;right:0;bottom:0;left:0;top:env(safe-area-inset-top,0px);right:env(safe-area-inset-right,0px);bottom:env(safe-area-inset-bottom,0px);left:env(safe-area-inset-left,0px);width:auto;height:auto;border:0;background:transparent;color-scheme:normal;visibility:hidden}
+#frame{position:fixed;top:0;right:0;bottom:0;left:0;top:env(safe-area-inset-top,0px);right:env(safe-area-inset-right,0px);bottom:env(safe-area-inset-bottom,0px);left:env(safe-area-inset-left,0px);width:calc(100% - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px));height:calc(100% - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));border:0;background:transparent;color-scheme:normal;visibility:hidden}
 #frame.on{visibility:visible}
 .hidden{display:none!important}
 
@@ -113,7 +113,7 @@ body.hasbn .screen{padding-top:calc(54px + env(safe-area-inset-top,0px))}
 <div id="bn" class="hidden" role="status"></div>
 <div class="bg"><i></i><i></i><i></i></div>
 
-<iframe id="frame" title="Service" allow="camera; microphone; geolocation; clipboard-write; clipboard-read; autoplay; fullscreen; web-share; screen-wake-lock; accelerometer; gyroscope; magnetometer; picture-in-picture" referrerpolicy="origin" allowfullscreen></iframe>
+<iframe id="frame" title="Service" allow="camera; microphone; geolocation; clipboard-write; clipboard-read; autoplay; fullscreen; screen-wake-lock; accelerometer; gyroscope; magnetometer; picture-in-picture" referrerpolicy="origin"></iframe>
 
 <div id="splash" class="screen"><img id="sLogo" src="icon-192.png" alt=""><div class="dots"><b></b><b></b><b></b></div><div id="sStep" style="color:var(--mu);font-size:.85rem;min-height:1.2em;text-align:center;padding:0 20px"></div></div>
 
@@ -203,8 +203,8 @@ let step = "démarrage", wd;
 const setStep = t => { step = t; const e = $("#sStep"); if (e) e.textContent = t; };
 const show = w => {
   clearTimeout(wd);
-  if (w === "splash") wd = setTimeout(() => { show("login"); msg("Le chargement est bloqué à l’étape : " + step + (lastErr ? " (" + lastErr + ")" : "") + ". Réessayez ou envoyez ce message à l’administrateur."); }, 25000);
-  $("#splash").classList.toggle("hidden", w !== "splash"); $("#login").classList.toggle("hidden", w !== "login"); $("#susp").classList.toggle("hidden", w !== "susp"); frame.classList.toggle("on", w === "app"); document.body.classList.toggle("hasbn", w !== "app" && !$("#bn").classList.contains("hidden")); };
+  if (w === "splash") wd = setTimeout(() => { show("login"); msg("Le chargement est bloqué à l’étape : " + step + " (" + diag() + "). Réessayez ou envoyez ce message à l’administrateur."); }, 25000);
+  $("#splash").classList.toggle("hidden", w !== "splash"); $("#login").classList.toggle("hidden", w !== "login"); $("#susp").classList.toggle("hidden", w !== "susp"); frame.classList.toggle("on", w === "app"); $("#bn").style.display = w === "app" ? "none" : ""; document.body.classList.toggle("hasbn", w !== "app" && !$("#bn").classList.contains("hidden")); };
 const msg = (t, ok) => { const m = $("#msg"); m.textContent = t || ""; m.className = t ? (ok ? "ok" : "bad") : ""; };
 const busy = (f, b) => { f.querySelectorAll("input,button").forEach(x => x.disabled = b); const bt = f.querySelector(".btn"); if (bt) bt.classList.toggle("load", b); };
 const authErr = e => ({
@@ -327,7 +327,8 @@ async function provisionService(id, svc, prof, creds) {
 }
 
 /* ===== Entrée dans le service (session valide) ===== */
-let IORIGIN = "", expected = "", sent = false, recovered = false, readyT, ctx = null, lastErr = "", helloSeen = false;
+let IORIGIN = "", expected = "", sent = false, recovered = false, readyT, ctx = null, lastErr = "", helloSeen = false, ifaceV = "";
+const diag = () => lastErr || ("site secret " + (helloSeen ? "joint (version " + (ifaceV || "ancienne") + ")" : "muet") + ", identifiants " + (sent ? "envoyés" : "non envoyés") + ", pas de confirmation");
 const sendLogin = () => { const c = { email: ctx.creds.email, password: ctx.creds.key }; toFrame({ type: "talco-login", ...c }); toFrame({ type: "exchange-login", ...c }); };
 const toFrame = m => frame.contentWindow && frame.contentWindow.postMessage(m, IORIGIN);
 
@@ -367,7 +368,7 @@ async function provisionOthers(u, prof, sso) {
   } catch (e) {}
 }
 async function recover() {                      // une seule tentative de réparation du compte du service
-  if (recovered || !ctx) { if (!frame.classList.contains("on")) { show("login"); msg("Le service ne répond pas. Réessayez." + (lastErr ? " (" + lastErr + ")" : "")); } return; }
+  if (recovered || !ctx) { if (!frame.classList.contains("on")) { show("login"); msg("Le service ne répond pas. Réessayez. (" + diag() + ")"); } return; }
   recovered = true;
   try { await provisionService(SVC.id, ctx.svc, ctx.prof, ctx.creds); sent = true; sendLogin(); readyT = setTimeout(recover, 12000); }
   catch (e) { lastErr = "compte du service : " + why(e); show("login"); msg("Le service ne répond pas. Réessayez. (" + lastErr + ")"); }
@@ -376,8 +377,9 @@ addEventListener("message", async e => {
   if (!IORIGIN || e.origin !== IORIGIN || e.source !== frame.contentWindow) return;
   const m = { ...(e.data || {}) };
   if (typeof m.type === "string") m.type = m.type.replace(/^exchange-/, "talco-");
+  if (m.type === "talco-need-login") { m.type = "talco-hello"; m.email = null; }
   if (m.type === "talco-hello") {
-    helloSeen = true;
+    helloSeen = true; ifaceV = m.v || "ancienne";
     setStep("connexion au site…");
     if (ctx && m.email !== expected && !sent) { sent = true; sendLogin(); }
   } else if (m.type === "talco-error") { lastErr = String(m.message || "").slice(0, 160); }
